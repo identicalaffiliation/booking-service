@@ -1,0 +1,46 @@
+services:
+  booking-postgresql:
+    container_name: booking-psql
+    image: postgres:17
+    environment:
+      POSTGRES_USER: ${BOOKING_POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${BOOKING_POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${BOOKING_POSTGRES_DB:-postgres}
+    ports:
+      - "5430:5432"
+    volumes:
+      - booking_db:/val/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${BOOKING_POSTGRES_USER} -d ${BOOKING_POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  notifications-postgresql:
+    container_name: notifications-psql
+    image: postgres:17
+    environment:
+      POSTGRES_USER: ${NOTIFICATIONS_POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${NOTIFICATIONS_POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${NOTIFICATIONS_POSTGRES_DB:-postgres}
+    ports:
+      - "5431:5432"
+    volumes:
+      - notifications_db:/val/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${NOTIFICATIONS_POSTGRES_USER} -d ${NOTIFICATIONS_POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  booking-migrator:
+    container_name: booking-migrator
+    build:
+      context: ./migrator
+    environment:
+      POSTGRES_URL: ${BOOKING_DB_URL}
+    depends_on:
+      booking-postgresql:
+        condition: service_healthy
+volumes:
+  booking_db:
+  notifications_db:

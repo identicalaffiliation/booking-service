@@ -1,0 +1,10 @@
+-- +goose Up
+CREATE TABLE IF NOT EXISTS rooms (
+  id UUID PRIMARY KEY NOT NULL,
+  name VARCHAR(100) NOT NULL CHECK (LENGTH(name) > 5),
+  capacity INTEGER NOT NULL DEFAULT 1,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- +goose Down
+DROP TABLE IF EXISTS rooms;
