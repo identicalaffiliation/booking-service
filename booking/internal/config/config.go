@@ -20,7 +20,7 @@ type (
 
 	PostgresConfig struct {
 		DB_URL      string        `env:"POSTGRES_URL"`
-		MaxConns    int           `yaml:"max_conns"`
+		MaxConns    int32         `yaml:"max_conns"`
 		MaxIddle    int           `yaml:"max_iddle"`
 		MaxLifetime time.Duration `yaml:"max_lifetime"`
 	}
