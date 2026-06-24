@@ -1,0 +1,17 @@
+server:
+  port: 8080
+  host: 0.0.0.0
+  read_timeout: 5s
+  write_timeout: 5s
+  iddle_timeout: 60s
+  shutdown_timeout: 30s
+
+postgres:
+  max_conns: 25
+  max_iddle: 10
+  max_lifetime: 1h
+
+logger:
+  level: debug
+  format: text
+  

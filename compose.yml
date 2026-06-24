@@ -9,7 +9,7 @@ services:
     ports:
       - "5430:5432"
     volumes:
-      - booking_db:/val/lib/postgresql
+      - booking_db:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${BOOKING_POSTGRES_USER} -d ${BOOKING_POSTGRES_DB}"]
       interval: 10s
@@ -26,7 +26,7 @@ services:
     ports:
       - "5431:5432"
     volumes:
-      - notifications_db:/val/lib/postgresql
+      - notifications_db:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${NOTIFICATIONS_POSTGRES_USER} -d ${NOTIFICATIONS_POSTGRES_DB}"]
       interval: 10s
@@ -41,6 +41,17 @@ services:
     depends_on:
       booking-postgresql:
         condition: service_healthy
+  booking-api:
+    container_name: booking-api
+    build:
+      context: ./booking
+    environment:
+      POSTGRES_URL: ${BOOKING_DB_URL}
+    volumes:
+      - ./booking/configs/config.yml:/app/config.yml:ro
+    ports:
+      - "8080:8080"
+
 volumes:
   booking_db:
   notifications_db:
