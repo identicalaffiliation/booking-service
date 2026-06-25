@@ -25,11 +25,11 @@ func (i *CreateRoomInput) Validate() error {
 	}
 
 	if len(i.Name) < 1 {
-		return ErrInvalidRoomCapacity
+		return ErrInvalidRoomName
 	}
 
-	if len(i.Name) < 5 {
-		return ErrInvalidRoomName
+	if i.Capacity < 1 || i.Capacity > 7 {
+		return ErrInvalidRoomCapacity
 	}
 
 	return nil

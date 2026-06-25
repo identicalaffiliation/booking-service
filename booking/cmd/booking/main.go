@@ -34,9 +34,12 @@ func main() {
 	defer cleanup()
 
 	roomsRepo := psql.NewRoomsRepository(pool)
-	roomsUsecase := application.NewRoomsUsecase(roomsRepo)
+	schedulesRepo := psql.NewScheduleRepository(pool)
 
-	srv := setupServer(cfg, roomsUsecase)
+	roomsUsecase := application.NewRoomsUsecase(roomsRepo)
+	schedulesUsecase := application.NewSchedulesUsecase(schedulesRepo)
+
+	srv := setupServer(cfg, roomsUsecase, schedulesUsecase)
 
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, syscall.SIGTERM, syscall.SIGINT)
@@ -76,7 +79,7 @@ func setupPool(ctx context.Context, cfg *config.BookingConfig) (*pgxpool.Pool, e
 	}
 }
 
-func setupServer(cfg *config.BookingConfig, ru *application.RoomsUsecase) *echo.Echo {
+func setupServer(cfg *config.BookingConfig, ru *application.RoomsUsecase, su *application.SchedulesUsecase) *echo.Echo {
 	e := echo.New()
 	e.Server.Addr = fmt.Sprintf("%s:%d", cfg.Host, cfg.Port)
 	e.Server.ReadTimeout = cfg.ReadTimeout
@@ -84,6 +87,7 @@ func setupServer(cfg *config.BookingConfig, ru *application.RoomsUsecase) *echo.
 	e.Server.IdleTimeout = cfg.IddleTimeout
 
 	e.POST("/api/v1/rooms", handlers.CreateRoom(ru))
+	e.POST("/api/v1/rooms{id}/schedule", handlers.CreateSchedule(su))
 
 	return e
 }

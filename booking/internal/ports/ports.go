@@ -9,3 +9,7 @@ import (
 type RoomsRepository interface {
 	CreateRoom(ctx context.Context, r *domain.Room) (*domain.Room, error)
 }
+
+type SchedulesRepository interface {
+	CreateSchedule(ctx context.Context, s *domain.Schedule) (*domain.Schedule, error)
+}

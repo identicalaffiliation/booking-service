@@ -3,8 +3,8 @@ CREATE TABLE IF NOT EXISTS schedules (
   id UUID PRIMARY KEY NOT NULL,
   room_id UUID REFERENCES rooms(id) ON DELETE CASCADE,
   work_day DATE NOT NULL,
-  start_work_time TIMESTAMPTZ NOT NULL,
-  end_work_time TIMESTAMPTZ NOT NULL,
+  start_work_time INT NOT NULL,
+  end_work_time INT NOT NULL,
   created_at TIMESTAMPTZ DEFAULT NOW(),
 
   UNIQUE(room_id, work_day)
