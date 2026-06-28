@@ -39,7 +39,7 @@ func (u *RoomsUsecase) CreateRoom(
 		}
 
 		u.log.Error("failed to create room", "layer", RoomsLayer, "error", err)
-		return nil, ErrInternalRoomUsecase
+		return nil, ErrInternal
 	}
 
 	return output.NewCreateRoomOutput(

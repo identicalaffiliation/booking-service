@@ -7,6 +7,7 @@ type (
 		ServerConfig   `yaml:"server"`
 		PostgresConfig `yaml:"postgres"`
 		LoggerConfig   `yaml:"logger"`
+		CronConfig     `yaml:"cron"`
 	}
 
 	ServerConfig struct {
@@ -28,5 +29,11 @@ type (
 	LoggerConfig struct {
 		Level  string `yaml:"level"`
 		Format string `yaml:"format"`
+	}
+
+	CronConfig struct {
+		SlotInterval    time.Duration `yaml:"slot_interval"`
+		JobStartHours   int           `yaml:"job_start_hours"`
+		JobStartMinutes int           `yaml:"job_start_minutes"`
 	}
 )

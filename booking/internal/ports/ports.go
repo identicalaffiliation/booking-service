@@ -17,4 +17,9 @@ type RoomsRepository interface {
 
 type SchedulesRepository interface {
 	CreateSchedule(ctx context.Context, s *domain.Schedule) (*domain.Schedule, error)
+	GetAllSchedules(ctx context.Context) ([]*domain.Schedule, error)
+}
+
+type SlotsRepository interface {
+	CreateSlot(ctx context.Context, slot *domain.Slot) error
 }

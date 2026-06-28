@@ -15,7 +15,7 @@ const (
 	ROOM_ID_MUX_PATTERN = "roomId"
 )
 
-func CreateSchedule(ucase *application.SchedulesUsecase) echo.HandlerFunc {
+func CreateSchedule(schedule *application.SchedulesUsecase) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		var r json.CreateScheduleRequest
 		if err := ctx.Bind(&r); err != nil {
@@ -31,7 +31,7 @@ func CreateSchedule(ucase *application.SchedulesUsecase) echo.HandlerFunc {
 
 		in := input.NewCreateScheduleInput(roomID, r.Day, r.Start, r.End)
 
-		out, err := ucase.CreateSchedule(req.Context(), in)
+		out, err := schedule.CreateSchedule(req.Context(), in)
 		if err != nil {
 			if errors.Is(err, application.ErrInvalidRoomId) {
 				return json.NewBadRequest("invalid room id")

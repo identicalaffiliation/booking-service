@@ -14,4 +14,8 @@ postgres:
 logger:
   level: debug
   format: text
-  
+
+cron:
+  slot_interval: 1h
+  job_start_hours: 6
+  job_start_minutes: 0
