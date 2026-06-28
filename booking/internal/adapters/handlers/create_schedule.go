@@ -24,7 +24,7 @@ func CreateSchedule(ucase *application.SchedulesUsecase) echo.HandlerFunc {
 
 		req := ctx.Request()
 
-		roomID, err := uuid.Parse(req.PathValue(ROOM_ID_MUX_PATTERN))
+		roomID, err := uuid.Parse(ctx.Param(ROOM_ID_MUX_PATTERN))
 		if err != nil {
 			return json.NewBadRequest("invalid room id")
 		}

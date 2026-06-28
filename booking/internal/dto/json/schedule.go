@@ -16,7 +16,7 @@ type CreateScheduleResponse struct {
 	ID        uuid.UUID `json:"id"`
 	RoomID    uuid.UUID `json:"roomId"`
 	Day       string    `json:"day"`
-	Start     int       `json:"start"`
-	End       int       `json:"end"`
+	Start     string    `json:"start"`
+	End       string    `json:"end"`
 	CreatedAt time.Time `json:"createdAt"`
 }

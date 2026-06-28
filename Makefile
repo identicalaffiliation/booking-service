@@ -27,6 +27,9 @@ migrate_reset:
 .PHONY: up
 up:
 	docker compose up --build -d booking-api
+.PHONY: down
+down:
+	docker compose down booking-api
 
 .PHONY: integration_tests
 integration_tests:

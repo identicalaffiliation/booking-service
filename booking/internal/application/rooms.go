@@ -11,17 +11,15 @@ import (
 	"github.com/identicalaffiliation/booking-service/booking/internal/ports"
 )
 
-var (
-	ErrRoomAlreadyExists   = errors.New("room already exists")
-	ErrInternalRoomUsecase = errors.New("internal server error")
-)
+const RoomsLayer = "rooms service layer"
 
 type RoomsUsecase struct {
 	repo ports.RoomsRepository
+	log  ports.Logger
 }
 
-func NewRoomsUsecase(repo ports.RoomsRepository) *RoomsUsecase {
-	return &RoomsUsecase{repo: repo}
+func NewRoomsUsecase(repo ports.RoomsRepository, log ports.Logger) *RoomsUsecase {
+	return &RoomsUsecase{repo: repo, log: log}
 }
 
 func (u *RoomsUsecase) CreateRoom(
@@ -40,6 +38,7 @@ func (u *RoomsUsecase) CreateRoom(
 			return nil, ErrRoomAlreadyExists
 		}
 
+		u.log.Error("failed to create room", "layer", RoomsLayer, "error", err)
 		return nil, ErrInternalRoomUsecase
 	}
 

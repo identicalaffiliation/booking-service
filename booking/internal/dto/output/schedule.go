@@ -10,15 +10,15 @@ type CreateScheduleOutput struct {
 	ID        uuid.UUID
 	RoomID    uuid.UUID
 	Day       string
-	Start     int
-	End       int
+	Start     string
+	End       string
 	CreatedAt time.Time
 }
 
 func NewCreateScheduleOutput(
 	id, roomId uuid.UUID,
 	day string,
-	start, end int,
+	start, end string,
 	createdAt time.Time,
 ) *CreateScheduleOutput {
 	return &CreateScheduleOutput{

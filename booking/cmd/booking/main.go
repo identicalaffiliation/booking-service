@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"flag"
 	"fmt"
 	"net/http"
@@ -10,6 +11,7 @@ import (
 	"syscall"
 
 	"github.com/identicalaffiliation/booking-service/booking/internal/adapters/handlers"
+	"github.com/identicalaffiliation/booking-service/booking/internal/adapters/logger"
 	"github.com/identicalaffiliation/booking-service/booking/internal/adapters/storage/psql"
 	"github.com/identicalaffiliation/booking-service/booking/internal/application"
 	"github.com/identicalaffiliation/booking-service/booking/internal/config"
@@ -25,10 +27,15 @@ func main() {
 	cfg := config.MustLoad(configPath)
 	ctx := context.Background()
 
+	slogger, err := logger.NewLogger(cfg)
+	if err != nil {
+		fmt.Fprintln(os.Stdout, "failed to load logger", err)
+		os.Exit(1)
+	}
+
 	pool, err, cleanup := setupPool(ctx, cfg)
 	if err != nil {
-		fmt.Println("error", err)
-		os.Exit(1)
+		slogger.Error("failed to setup pgx pool", "error", err)
 	}
 
 	defer cleanup()
@@ -36,8 +43,8 @@ func main() {
 	roomsRepo := psql.NewRoomsRepository(pool)
 	schedulesRepo := psql.NewScheduleRepository(pool)
 
-	roomsUsecase := application.NewRoomsUsecase(roomsRepo)
-	schedulesUsecase := application.NewSchedulesUsecase(schedulesRepo)
+	roomsUsecase := application.NewRoomsUsecase(roomsRepo, slogger)
+	schedulesUsecase := application.NewSchedulesUsecase(schedulesRepo, slogger)
 
 	srv := setupServer(cfg, roomsUsecase, schedulesUsecase)
 
@@ -45,8 +52,9 @@ func main() {
 	signal.Notify(signals, syscall.SIGTERM, syscall.SIGINT)
 
 	go func() {
-		if err := srv.Start(srv.Server.Addr); err != nil && err != http.ErrServerClosed {
-			fmt.Println("start server error", err)
+		slogger.Debug("starting server..")
+		if err := srv.Start(srv.Server.Addr); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			slogger.Error("failed to close server conn", "error", err)
 		}
 	}()
 
@@ -56,9 +64,10 @@ func main() {
 	defer cancel()
 
 	if err := srv.Shutdown(ctx); err != nil {
-		fmt.Println("stop serve error", err)
+		slogger.Error("failed to shutdown server", "error", err)
 	}
 
+	slogger.Debug("server is stopped gracefully")
 }
 
 func setupPool(ctx context.Context, cfg *config.BookingConfig) (*pgxpool.Pool, error, func()) {
@@ -87,7 +96,7 @@ func setupServer(cfg *config.BookingConfig, ru *application.RoomsUsecase, su *ap
 	e.Server.IdleTimeout = cfg.IddleTimeout
 
 	e.POST("/api/v1/rooms", handlers.CreateRoom(ru))
-	e.POST("/api/v1/rooms{id}/schedule", handlers.CreateSchedule(su))
+	e.POST("/api/v1/rooms/:roomId/schedule", handlers.CreateSchedule(su))
 
 	return e
 }
