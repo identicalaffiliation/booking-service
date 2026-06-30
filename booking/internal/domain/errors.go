@@ -1,4 +1,4 @@
-package application
+package domain
 
 import "errors"
 
@@ -9,5 +9,6 @@ var (
 	ErrInvalidRoomId         = errors.New("invalid room id")
 	ErrInvalidTimeInterval   = errors.New("invalid start and end time interval")
 
-	ErrInternal = errors.New("internal server error")
+	ErrInternal          = errors.New("internal server error")
+	ErrSlotAlreadyExists = errors.New("slot already exists")
 )

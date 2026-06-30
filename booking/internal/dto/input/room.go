@@ -11,8 +11,8 @@ var (
 )
 
 type CreateRoomInput struct {
-	Name     string
-	Capacity int
+	Name     string `json:"name"`
+	Capacity int    `json:"capacity"`
 }
 
 func NewCreateRoomInput(name string, cap int) *CreateRoomInput {

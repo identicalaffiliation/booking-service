@@ -1,10 +1,10 @@
-package json
+package output
 
 import "net/http"
 
 const (
-	BAD_REQUEST = "BAD_REQUEST"
-	INTERNAL    = "INTERNAL_SERVER_ERROR"
+	BadRequest = "BAD_REQUEST"
+	INTERNAL   = "INTERNAL_SERVER_ERROR"
 )
 
 type ErrorStatus string
@@ -23,7 +23,7 @@ func NewBadRequest(msg string) error {
 	return &HTTPError{
 		Message: msg,
 		Code:    http.StatusBadRequest,
-		Status:  BAD_REQUEST,
+		Status:  BadRequest,
 	}
 }
 

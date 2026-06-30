@@ -2,14 +2,9 @@ package psql
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	"github.com/identicalaffiliation/booking-service/booking/internal/domain"
-)
-
-var (
-	ErrRoomAlreadyExists = errors.New("room already exists")
 )
 
 type RoomsRepository struct {
@@ -35,7 +30,7 @@ func (r *RoomsRepository) CreateRoom(ctx context.Context, room *domain.Room) (*d
 	)
 	if err != nil {
 		if checkUniqueViolation(err) {
-			return nil, ErrRoomAlreadyExists
+			return nil, domain.ErrRoomAlreadyExists
 		}
 
 		return nil, fmt.Errorf("create room: %w", err)

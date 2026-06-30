@@ -1,10 +1,9 @@
-package application
+package usecase
 
 import (
 	"context"
 	"errors"
 
-	"github.com/identicalaffiliation/booking-service/booking/internal/adapters/storage/psql"
 	"github.com/identicalaffiliation/booking-service/booking/internal/domain"
 	"github.com/identicalaffiliation/booking-service/booking/internal/dto/input"
 	"github.com/identicalaffiliation/booking-service/booking/internal/dto/output"
@@ -34,12 +33,12 @@ func (u *RoomsUsecase) CreateRoom(
 
 	created, err := u.repo.CreateRoom(ctx, room)
 	if err != nil {
-		if errors.Is(err, psql.ErrRoomAlreadyExists) {
-			return nil, ErrRoomAlreadyExists
+		if errors.Is(err, domain.ErrRoomAlreadyExists) {
+			return nil, domain.ErrRoomAlreadyExists
 		}
 
 		u.log.Error("failed to create room", "layer", RoomsLayer, "error", err)
-		return nil, ErrInternal
+		return nil, domain.ErrInternal
 	}
 
 	return output.NewCreateRoomOutput(

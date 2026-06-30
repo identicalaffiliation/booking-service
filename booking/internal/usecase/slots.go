@@ -1,12 +1,11 @@
-package application
+package usecase
 
 import (
 	"context"
 	"errors"
 	"time"
 
-	"github.com/identicalaffiliation/booking-service/booking/internal/adapters/storage/psql"
-	"github.com/identicalaffiliation/booking-service/booking/internal/config"
+	"github.com/identicalaffiliation/booking-service/booking/config"
 	"github.com/identicalaffiliation/booking-service/booking/internal/domain"
 	"github.com/identicalaffiliation/booking-service/booking/internal/ports"
 )
@@ -37,7 +36,7 @@ func NewSlotsUsecase(
 func (u *SlotsUsecase) GenerateSlots(ctx context.Context) error {
 	availableSchedules, err := u.schedulesRepo.GetAllSchedules(ctx)
 	if err != nil {
-		return ErrInternal
+		return domain.ErrInternal
 	}
 
 	for _, schedule := range availableSchedules {
@@ -58,7 +57,7 @@ func (u *SlotsUsecase) GenerateSlotForSchedule(ctx context.Context, schedule *do
 		slot := domain.NewSlot(schedule.RoomID, date, i, i+interval)
 		err := u.slotsRepo.CreateSlot(ctx, slot)
 		if err != nil {
-			if errors.Is(err, psql.ErrSlotAlreadyExists) {
+			if errors.Is(err, domain.ErrSlotAlreadyExists) {
 				continue
 			}
 

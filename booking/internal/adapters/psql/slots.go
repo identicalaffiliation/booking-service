@@ -2,14 +2,9 @@ package psql
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	"github.com/identicalaffiliation/booking-service/booking/internal/domain"
-)
-
-var (
-	ErrSlotAlreadyExists = errors.New("slot already exists")
 )
 
 type SlotsRepository struct {
@@ -29,7 +24,7 @@ func (r *SlotsRepository) CreateSlot(ctx context.Context, slot *domain.Slot) err
 	_, err := r.db.Exec(ctx, query, slot.ID, slot.RoomID, slot.Day, slot.StartTime, slot.EndTime)
 	if err != nil {
 		if checkUniqueViolation(err) {
-			return ErrSlotAlreadyExists
+			return domain.ErrSlotAlreadyExists
 		}
 
 		return fmt.Errorf("create slot: %w", err)

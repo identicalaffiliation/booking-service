@@ -9,21 +9,14 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 
-	"github.com/identicalaffiliation/booking-service/booking/internal/adapters/handlers"
-	"github.com/identicalaffiliation/booking-service/booking/internal/adapters/logger"
-	"github.com/identicalaffiliation/booking-service/booking/internal/adapters/storage/psql"
-	"github.com/identicalaffiliation/booking-service/booking/internal/application"
-	"github.com/identicalaffiliation/booking-service/booking/internal/config"
-	"github.com/identicalaffiliation/booking-service/booking/internal/ports"
-	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/labstack/echo/v4"
-)
-
-const (
-	seconds  = 0
-	nseconds = 0
+	"github.com/identicalaffiliation/booking-service/booking/config"
+	"github.com/identicalaffiliation/booking-service/booking/internal/adapters/psql"
+	"github.com/identicalaffiliation/booking-service/booking/internal/usecase"
+	"github.com/identicalaffiliation/booking-service/booking/pkg/generator"
+	"github.com/identicalaffiliation/booking-service/booking/pkg/httpserver"
+	"github.com/identicalaffiliation/booking-service/booking/pkg/logger"
+	"github.com/identicalaffiliation/booking-service/booking/pkg/pool"
 )
 
 func main() {
@@ -41,27 +34,27 @@ func main() {
 		os.Exit(1)
 	}
 
-	pool, err, cleanup := setupPool(ctx, cfg)
+	postgresPool, err, cleanup := pool.SetupPool(ctx, cfg)
 	if err != nil {
 		slogger.Error("failed to setup pgx pool", "error", err)
 	}
 
 	defer cleanup()
 
-	roomsRepo := psql.NewRoomsRepository(pool)
-	schedulesRepo := psql.NewScheduleRepository(pool)
-	slotsRepo := psql.NewSlotsRepository(pool)
+	roomsRepo := psql.NewRoomsRepository(postgresPool)
+	schedulesRepo := psql.NewScheduleRepository(postgresPool)
+	slotsRepo := psql.NewSlotsRepository(postgresPool)
 
-	roomsUsecase := application.NewRoomsUsecase(roomsRepo, slogger)
-	slotsUsecase := application.NewSlotsUsecase(slotsRepo, schedulesRepo, slogger, cfg)
-	schedulesUsecase := application.NewSchedulesUsecase(schedulesRepo, slogger, slotsUsecase)
+	rooms := usecase.NewRoomsUsecase(roomsRepo, slogger)
+	slots := usecase.NewSlotsUsecase(slotsRepo, schedulesRepo, slogger, cfg)
+	schedules := usecase.NewSchedulesUsecase(schedulesRepo, slogger, slots)
 
-	srv := setupServer(cfg, roomsUsecase, schedulesUsecase)
+	srv := httpserver.SetupServer(cfg, rooms, schedules)
 
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, syscall.SIGTERM, syscall.SIGINT)
 
-	startSlotGenerator(ctx, slotsUsecase, slogger, cfg)
+	generator.StartSlotGenerator(ctx, slots, slogger, cfg)
 
 	go func() {
 		slogger.Debug("starting server..")
@@ -80,74 +73,4 @@ func main() {
 	}
 
 	slogger.Debug("server is stopped gracefully")
-}
-
-func setupPool(ctx context.Context, cfg *config.BookingConfig) (*pgxpool.Pool, error, func()) {
-	pool, err := pgxpool.New(ctx, cfg.DB_URL)
-	if err != nil {
-		return nil, fmt.Errorf("open new pgx pool: %w", err), func() {}
-	}
-
-	if err := pool.Ping(ctx); err != nil {
-		return nil, fmt.Errorf("ping pgx pool: %w", err), func() {}
-	}
-
-	pool.Config().MaxConns = cfg.MaxConns
-	pool.Config().MaxConnLifetime = cfg.MaxLifetime
-
-	return pool, nil, func() {
-		pool.Close()
-	}
-}
-
-func setupServer(cfg *config.BookingConfig, ru *application.RoomsUsecase, su *application.SchedulesUsecase) *echo.Echo {
-	e := echo.New()
-	e.Server.Addr = fmt.Sprintf("%s:%d", cfg.Host, cfg.Port)
-	e.Server.ReadTimeout = cfg.ReadTimeout
-	e.Server.WriteTimeout = cfg.WriteTimeout
-	e.Server.IdleTimeout = cfg.IddleTimeout
-
-	e.POST("/api/v1/rooms", handlers.CreateRoom(ru))
-	e.POST("/api/v1/rooms/:roomId/schedule", handlers.CreateSchedule(su))
-
-	return e
-}
-
-func startSlotGenerator(
-	ctx context.Context,
-	usecase *application.SlotsUsecase,
-	log ports.Logger,
-	cfg *config.BookingConfig) {
-	go func() {
-		for {
-			now := time.Now().UTC()
-			nextRound := getNextRound(now, cfg)
-
-			timer := time.NewTimer(time.Until(nextRound))
-			select {
-			case <-ctx.Done():
-				log.Debug("slot generator is stopped by ctx")
-				timer.Stop()
-				return
-			case <-timer.C:
-				log.Debug("slot generator started..")
-				if err := usecase.GenerateSlots(ctx); err != nil {
-					log.Error("slot generation fail", "error", err)
-				}
-			}
-		}
-	}()
-}
-
-func getNextRound(now time.Time, cfg *config.BookingConfig) time.Time {
-	next := time.Date(now.Year(), now.Month(), now.Day(),
-		cfg.JobStartHours, cfg.JobStartMinutes, seconds, nseconds,
-		time.UTC,
-	)
-
-	if now.After(next) {
-		next = next.Add(time.Hour * 24)
-	}
-
-	return next
 }

@@ -2,14 +2,9 @@ package psql
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	"github.com/identicalaffiliation/booking-service/booking/internal/domain"
-)
-
-var (
-	ErrScheduleAlreadyExists = errors.New("schedule already exists")
 )
 
 type ScheduleRepository struct {
@@ -43,7 +38,7 @@ func (r *ScheduleRepository) CreateSchedule(ctx context.Context, s *domain.Sched
 		)
 	if err != nil {
 		if checkUniqueViolation(err) {
-			return nil, ErrScheduleAlreadyExists
+			return nil, domain.ErrScheduleAlreadyExists
 		}
 
 		return nil, fmt.Errorf("create schedule: %w", err)
@@ -60,7 +55,7 @@ func (r *ScheduleRepository) GetAllSchedules(ctx context.Context) ([]*domain.Sch
 	if err != nil {
 		return nil, fmt.Errorf("get schedules: %w", err)
 	}
-	
+
 	defer rows.Close()
 
 	var schedules []*domain.Schedule

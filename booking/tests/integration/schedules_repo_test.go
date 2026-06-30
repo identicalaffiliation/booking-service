@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
-	"github.com/identicalaffiliation/booking-service/booking/internal/adapters/storage/psql"
+	"github.com/identicalaffiliation/booking-service/booking/internal/adapters/psql"
 	"github.com/identicalaffiliation/booking-service/booking/internal/domain"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -45,7 +45,7 @@ func TestSchedulesRepository_CreateSchedule(t *testing.T) {
 
 		result, err := schRepo.CreateSchedule(context.Background(), actual)
 		require.Error(t, err)
-		assert.ErrorIs(t, err, psql.ErrScheduleAlreadyExists)
+		assert.ErrorIs(t, err, domain.ErrScheduleAlreadyExists)
 		assert.Nil(t, result)
 	})
 }

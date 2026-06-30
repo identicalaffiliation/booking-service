@@ -1,10 +1,10 @@
-package handlers
+package controller
 
 import (
 	"errors"
 	"net/http"
 
-	"github.com/identicalaffiliation/booking-service/booking/internal/dto/json"
+	"github.com/identicalaffiliation/booking-service/booking/internal/dto/output"
 	"github.com/labstack/echo/v4"
 )
 
@@ -14,16 +14,16 @@ func HTTPErrorHandler() echo.HTTPErrorHandler {
 			return
 		}
 
-		var httpErr *json.HTTPError
+		var httpErr *output.HTTPError
 		if errors.As(err, &httpErr) {
 			_ = c.JSON(httpErr.Code, httpErr)
 			return
 		}
 
-		_ = c.JSON(http.StatusInternalServerError, json.HTTPError{
+		_ = c.JSON(http.StatusInternalServerError, output.HTTPError{
 			Message: "INTERNAL SERVER ERROR",
 			Code:    http.StatusInternalServerError,
-			Status:  json.INTERNAL,
+			Status:  output.INTERNAL,
 		})
 	}
 }

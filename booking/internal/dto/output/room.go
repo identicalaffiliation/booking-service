@@ -7,10 +7,10 @@ import (
 )
 
 type CreateRoomOutput struct {
-	ID        uuid.UUID
-	Name      string
-	Capacity  int
-	CreatedAt time.Time
+	ID        uuid.UUID `json:"id"`
+	Name      string    `json:"name"`
+	Capacity  int       `json:"capacity"`
+	CreatedAt time.Time `json:"createdAt"`
 }
 
 func NewCreateRoomOutput(

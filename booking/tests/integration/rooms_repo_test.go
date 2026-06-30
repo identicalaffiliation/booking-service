@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/identicalaffiliation/booking-service/booking/internal/adapters/storage/psql"
+	"github.com/identicalaffiliation/booking-service/booking/internal/adapters/psql"
 	"github.com/identicalaffiliation/booking-service/booking/internal/domain"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -37,7 +37,7 @@ func TestRoomsRepository_CreateRoom(t *testing.T) {
 		result, err := repo.CreateRoom(ctx, expected)
 		require.Error(t, err)
 
-		assert.ErrorIs(t, err, psql.ErrRoomAlreadyExists)
+		assert.ErrorIs(t, err, domain.ErrRoomAlreadyExists)
 		assert.Nil(t, result)
 	})
 }

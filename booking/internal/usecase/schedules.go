@@ -1,4 +1,4 @@
-package application
+package usecase
 
 import (
 	"context"
@@ -6,7 +6,6 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
-	"github.com/identicalaffiliation/booking-service/booking/internal/adapters/storage/psql"
 	"github.com/identicalaffiliation/booking-service/booking/internal/domain"
 	"github.com/identicalaffiliation/booking-service/booking/internal/dto/input"
 	"github.com/identicalaffiliation/booking-service/booking/internal/dto/output"
@@ -31,26 +30,26 @@ func NewSchedulesUsecase(schRepo ports.SchedulesRepository, log ports.Logger, sl
 
 func (u *SchedulesUsecase) CreateSchedule(ctx context.Context, in *input.CreateScheduleInput) (*output.CreateScheduleOutput, error) {
 	if in.RoomID == uuid.Nil {
-		return nil, ErrInvalidRoomId
+		return nil, domain.ErrInvalidRoomId
 	}
 
 	parsedStartTime, err := domain.ParseTimeDuration(in.Start)
 	if err != nil {
-		return nil, ErrInternal
+		return nil, domain.ErrInternal
 	}
 
 	parsedEndTime, err := domain.ParseTimeDuration(in.End)
 	if err != nil {
-		return nil, ErrInternal
+		return nil, domain.ErrInternal
 	}
 
 	parsedDay, err := domain.ParseTimeDate(in.Day)
 	if err != nil {
-		return nil, ErrInternal
+		return nil, domain.ErrInternal
 	}
 
 	if !u.ValidateStartAndEndInterval(parsedStartTime, parsedEndTime) {
-		return nil, ErrInvalidTimeInterval
+		return nil, domain.ErrInvalidTimeInterval
 	}
 
 	schedule := domain.NewSchedule(
@@ -62,12 +61,12 @@ func (u *SchedulesUsecase) CreateSchedule(ctx context.Context, in *input.CreateS
 
 	created, err := u.schRepo.CreateSchedule(ctx, schedule)
 	if err != nil {
-		if errors.Is(err, psql.ErrScheduleAlreadyExists) {
-			return nil, ErrScheduleAlreadyExists
+		if errors.Is(err, domain.ErrScheduleAlreadyExists) {
+			return nil, domain.ErrScheduleAlreadyExists
 		}
 
 		u.log.Error("failed to create schedule", "layer", ScheduleLayer, "error", err)
-		return nil, ErrInternal
+		return nil, domain.ErrInternal
 	}
 
 	err = u.slots.GenerateSlotForSchedule(ctx, created)

@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/identicalaffiliation/booking-service/booking/internal/adapters/storage/psql"
+	"github.com/identicalaffiliation/booking-service/booking/internal/adapters/psql"
 	"github.com/identicalaffiliation/booking-service/booking/internal/domain"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -61,6 +61,6 @@ func TestSlotsRepository_CreateSlot(t *testing.T) {
 		err = slotsRepository.CreateSlot(context.Background(), actual)
 		require.Error(t, err)
 
-		assert.ErrorIs(t, err, psql.ErrSlotAlreadyExists)
+		assert.ErrorIs(t, err, domain.ErrSlotAlreadyExists)
 	})
 }

@@ -7,12 +7,12 @@ import (
 )
 
 type CreateScheduleOutput struct {
-	ID        uuid.UUID
-	RoomID    uuid.UUID
-	Day       string
-	Start     string
-	End       string
-	CreatedAt time.Time
+	ID        uuid.UUID `json:"id"`
+	RoomID    uuid.UUID `json:"roomId"`
+	Day       string    `json:"day"`
+	Start     string    `json:"start"`
+	End       string    `json:"end"`
+	CreatedAt time.Time `json:"createdAt"`
 }
 
 func NewCreateScheduleOutput(
