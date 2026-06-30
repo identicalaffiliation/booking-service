@@ -2,14 +2,10 @@ package psql
 
 import (
 	"context"
-	"errors"
 	"fmt"
+	"time"
 
 	"github.com/identicalaffiliation/booking-service/booking/internal/domain"
-)
-
-var (
-	ErrScheduleAlreadyExists = errors.New("schedule already exists")
 )
 
 type ScheduleRepository struct {
@@ -43,11 +39,47 @@ func (r *ScheduleRepository) CreateSchedule(ctx context.Context, s *domain.Sched
 		)
 	if err != nil {
 		if checkUniqueViolation(err) {
-			return nil, ErrScheduleAlreadyExists
+			return nil, domain.ErrScheduleAlreadyExists
 		}
 
 		return nil, fmt.Errorf("create schedule: %w", err)
 	}
 
 	return &created, nil
+}
+
+func (r *ScheduleRepository) GetAllSchedules(ctx context.Context, date time.Time) ([]*domain.Schedule, error) {
+	const query = `SELECT id, room_id, work_day, start_work_time, end_work_time, created_at 
+		FROM schedules WHERE work_day = $1`
+
+	rows, err := r.db.Query(ctx, query, date)
+	if err != nil {
+		return nil, fmt.Errorf("get schedules: %w", err)
+	}
+
+	defer rows.Close()
+
+	var schedules []*domain.Schedule
+	for rows.Next() {
+		var schedule domain.Schedule
+		err := rows.Scan(
+			&schedule.ID,
+			&schedule.RoomID,
+			&schedule.Day,
+			&schedule.StartWorkTime,
+			&schedule.EndWorkTime,
+			&schedule.CreatedAt,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("scan schedule: %w", err)
+		}
+
+		schedules = append(schedules, &schedule)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("after scan: %w", err)
+	}
+
+	return schedules, nil
 }

@@ -5,7 +5,7 @@ import (
 	"log/slog"
 	"os"
 
-	"github.com/identicalaffiliation/booking-service/booking/internal/config"
+	"github.com/identicalaffiliation/booking-service/booking/config"
 )
 
 const (

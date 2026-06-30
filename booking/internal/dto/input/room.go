@@ -1,35 +1,24 @@
 package input
 
 import (
-	"errors"
 	"strings"
-)
 
-var (
-	ErrInvalidRoomName     = errors.New("invalid room name")
-	ErrInvalidRoomCapacity = errors.New("invalid room capacity")
+	"github.com/identicalaffiliation/booking-service/booking/internal/domain"
+	"github.com/identicalaffiliation/booking-service/booking/pkg/validator"
 )
 
 type CreateRoomInput struct {
-	Name     string
-	Capacity int
+	Name     string `json:"name" validate:"required,min=6,max=50"`
+	Capacity int    `json:"capacity" validate:"required,min=1,max=7"`
 }
 
-func NewCreateRoomInput(name string, cap int) *CreateRoomInput {
-	return &CreateRoomInput{Name: name, Capacity: cap}
-}
-
-func (i *CreateRoomInput) Validate() error {
-	if len(strings.TrimSpace(i.Name)) == 0 {
-		return ErrInvalidRoomName
+func (in *CreateRoomInput) Validate() error {
+	if err := validator.NewValidator().Validate(in); err != nil {
+		return domain.ErrInvalidRoomData
 	}
 
-	if len(i.Name) < 1 {
-		return ErrInvalidRoomName
-	}
-
-	if i.Capacity < 1 || i.Capacity > 7 {
-		return ErrInvalidRoomCapacity
+	if len(strings.TrimSpace(in.Name)) == 0 {
+		return domain.ErrInvalidRoomData
 	}
 
 	return nil

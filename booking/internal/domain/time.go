@@ -6,12 +6,12 @@ import (
 )
 
 const (
-	timeLayout = "15:04"
-	dateLayout = "2006-01-02"
+	TimeLayout = "15:04"
+	DateLayout = time.DateOnly
 )
 
 func ParseTimeDuration(t string) (int, error) {
-	parsed, err := time.Parse(timeLayout, t)
+	parsed, err := time.Parse(TimeLayout, t)
 	if err != nil {
 		return 0, fmt.Errorf("parse time: %w", err)
 	}
@@ -22,7 +22,7 @@ func ParseTimeDuration(t string) (int, error) {
 }
 
 func ParseTimeDate(d string) (time.Time, error) {
-	parsed, err := time.Parse(dateLayout, d)
+	parsed, err := time.Parse(DateLayout, d)
 	if err != nil {
 		return time.Time{}, fmt.Errorf("parse date: %w", err)
 	}
