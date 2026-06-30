@@ -3,8 +3,9 @@ package output
 import "net/http"
 
 const (
-	BadRequest = "BAD_REQUEST"
-	INTERNAL   = "INTERNAL_SERVER_ERROR"
+	BadRequest = "BAD REQUEST"
+	Internal   = "INTERNAL SERVER ERROR"
+	NotFound   = "NOT FOUND"
 )
 
 type ErrorStatus string
@@ -30,6 +31,13 @@ func NewBadRequest(msg string) error {
 func NewInternal() error {
 	return &HTTPError{
 		Code:   http.StatusInternalServerError,
-		Status: INTERNAL,
+		Status: Internal,
+	}
+}
+
+func NewNotFound() error {
+	return &HTTPError{
+		Code:   http.StatusNotFound,
+		Status: NotFound,
 	}
 }

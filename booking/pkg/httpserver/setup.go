@@ -20,8 +20,12 @@ func SetupServer(cfg *config.BookingConfig, ru *usecase.RoomsUsecase, su *usecas
 	e.HTTPErrorHandler = controller.HTTPErrorHandler()
 	e.Use(middleware.Recover())
 	e.Use(middleware.RequestLogger())
-	
+
 	e.POST("/api/v1/rooms", controller.CreateRoom(ru))
+	e.GET("/api/v1/rooms/:roomId", controller.GetRoom(ru))
+	e.GET("/api/v1/rooms", controller.GetRooms(ru))
+	e.DELETE("/api/v1/rooms/:roomId", controller.DeleteRoom(ru))
+
 	e.POST("/api/v1/rooms/:roomId/schedule", controller.CreateSchedule(su))
 
 	return e
