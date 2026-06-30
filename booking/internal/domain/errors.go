@@ -3,12 +3,12 @@ package domain
 import "errors"
 
 var (
-	ErrRoomAlreadyExists = errors.New("room already exists")
-
+	ErrRoomAlreadyExists     = errors.New("room already exists")
 	ErrScheduleAlreadyExists = errors.New("schedule already exists")
-	ErrInvalidRoomId         = errors.New("invalid room id")
-	ErrInvalidTimeInterval   = errors.New("invalid start and end time interval")
+	ErrSlotAlreadyExists     = errors.New("slot already exists")
 
-	ErrInternal          = errors.New("internal server error")
-	ErrSlotAlreadyExists = errors.New("slot already exists")
+	ErrInvalidRoomData     = errors.New("invalid room data")
+	ErrInvalidScheduleData = errors.New("invalid schedule data")
+
+	ErrInternal = errors.New("internal server error")
 )

@@ -27,19 +27,15 @@ func CreateSchedule(schedule *usecase.SchedulesUsecase) echo.HandlerFunc {
 
 		roomID, err := uuid.Parse(ctx.Param(RoomIdMuxPattern))
 		if err != nil {
-			return output.NewBadRequest("invalid room id")
+			return output.NewBadRequest("invalid path param")
 		}
 
 		in.RoomID = roomID
 
 		out, err := schedule.CreateSchedule(req.Context(), &in)
 		if err != nil {
-			if errors.Is(err, domain.ErrInvalidRoomId) {
-				return output.NewBadRequest("invalid room id")
-			}
-
-			if errors.Is(err, domain.ErrInvalidTimeInterval) {
-				return output.NewBadRequest("invalid time interval")
+			if errors.Is(err, domain.ErrInvalidScheduleData) {
+				return output.NewBadRequest("invalid schedule data")
 			}
 
 			if errors.Is(err, domain.ErrScheduleAlreadyExists) {

@@ -9,18 +9,26 @@ import (
 )
 
 func HTTPErrorHandler() echo.HTTPErrorHandler {
-	return func(err error, c echo.Context) {
-		if c.Response().Committed {
+	return func(err error, ctx echo.Context) {
+		if ctx.Response().Committed {
 			return
 		}
 
 		var httpErr *output.HTTPError
 		if errors.As(err, &httpErr) {
-			_ = c.JSON(httpErr.Code, httpErr)
+			type Error struct {
+				Err error `json:"error"`
+			}
+
+			err := &Error{
+				Err: httpErr,
+			}
+
+			_ = ctx.JSON(httpErr.Code, err)
 			return
 		}
 
-		_ = c.JSON(http.StatusInternalServerError, output.HTTPError{
+		_ = ctx.JSON(http.StatusInternalServerError, output.HTTPError{
 			Message: "INTERNAL SERVER ERROR",
 			Code:    http.StatusInternalServerError,
 			Status:  output.INTERNAL,

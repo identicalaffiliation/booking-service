@@ -10,9 +10,9 @@ const (
 type ErrorStatus string
 
 type HTTPError struct {
-	Message string
-	Code    int
-	Status  ErrorStatus
+	Message string      `json:"message"`
+	Code    int         `json:"code"`
+	Status  ErrorStatus `json:"status"`
 }
 
 func (err *HTTPError) Error() string {

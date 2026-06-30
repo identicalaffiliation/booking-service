@@ -25,10 +25,8 @@ func CreateRoom(rooms *usecase.RoomsUsecase) echo.HandlerFunc {
 			switch {
 			case errors.Is(err, domain.ErrRoomAlreadyExists):
 				return output.NewBadRequest("room already exists")
-			case errors.Is(err, input.ErrInvalidRoomCapacity):
-				return output.NewBadRequest("invalid room capacity")
-			case errors.Is(err, input.ErrInvalidRoomName):
-				return output.NewBadRequest("invalid room name")
+			case errors.Is(err, domain.ErrInvalidRoomData):
+				return output.NewBadRequest("invalid room data")
 			default:
 				return output.NewInternal()
 			}

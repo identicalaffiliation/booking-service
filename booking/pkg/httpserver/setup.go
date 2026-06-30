@@ -7,6 +7,7 @@ import (
 	"github.com/identicalaffiliation/booking-service/booking/internal/controller"
 	"github.com/identicalaffiliation/booking-service/booking/internal/usecase"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 func SetupServer(cfg *config.BookingConfig, ru *usecase.RoomsUsecase, su *usecase.SchedulesUsecase) *echo.Echo {
@@ -16,6 +17,10 @@ func SetupServer(cfg *config.BookingConfig, ru *usecase.RoomsUsecase, su *usecas
 	e.Server.WriteTimeout = cfg.WriteTimeout
 	e.Server.IdleTimeout = cfg.IdleTimeout
 
+	e.HTTPErrorHandler = controller.HTTPErrorHandler()
+	e.Use(middleware.Recover())
+	e.Use(middleware.RequestLogger())
+	
 	e.POST("/api/v1/rooms", controller.CreateRoom(ru))
 	e.POST("/api/v1/rooms/:roomId/schedule", controller.CreateSchedule(su))
 

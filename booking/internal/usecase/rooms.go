@@ -34,7 +34,7 @@ func (u *RoomsUsecase) CreateRoom(
 	created, err := u.repo.CreateRoom(ctx, room)
 	if err != nil {
 		if errors.Is(err, domain.ErrRoomAlreadyExists) {
-			return nil, domain.ErrRoomAlreadyExists
+			return nil, err
 		}
 
 		u.log.Error("failed to create room", "layer", RoomsLayer, "error", err)
