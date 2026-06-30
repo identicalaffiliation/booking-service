@@ -2,6 +2,7 @@ package ports
 
 import (
 	"context"
+	"time"
 
 	"github.com/identicalaffiliation/booking-service/booking/internal/domain"
 )
@@ -17,7 +18,7 @@ type RoomsRepository interface {
 
 type SchedulesRepository interface {
 	CreateSchedule(ctx context.Context, s *domain.Schedule) (*domain.Schedule, error)
-	GetAllSchedules(ctx context.Context) ([]*domain.Schedule, error)
+	GetAllSchedules(ctx context.Context, date time.Time) ([]*domain.Schedule, error)
 }
 
 type SlotsRepository interface {

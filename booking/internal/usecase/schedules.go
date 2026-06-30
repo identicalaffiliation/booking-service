@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/identicalaffiliation/booking-service/booking/internal/domain"
@@ -69,7 +70,7 @@ func (u *SchedulesUsecase) CreateSchedule(ctx context.Context, in *input.CreateS
 		return nil, domain.ErrInternal
 	}
 
-	err = u.slots.GenerateSlotForSchedule(ctx, created)
+	err = u.slots.GenerateSlotForSchedule(ctx, created, created.Day.Truncate(time.Hour*24))
 	if err != nil {
 		u.log.Error("failed to generate slots for schedule", "layer", ScheduleLayer,
 			"id", created.ID, "error", err)

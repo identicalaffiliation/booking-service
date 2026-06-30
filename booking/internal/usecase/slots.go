@@ -34,13 +34,14 @@ func NewSlotsUsecase(
 }
 
 func (u *SlotsUsecase) GenerateSlots(ctx context.Context) error {
-	availableSchedules, err := u.schedulesRepo.GetAllSchedules(ctx)
+	date := time.Now().UTC().Truncate(time.Hour * 24)
+	availableSchedules, err := u.schedulesRepo.GetAllSchedules(ctx, date)
 	if err != nil {
 		return domain.ErrInternal
 	}
 
 	for _, schedule := range availableSchedules {
-		err := u.GenerateSlotForSchedule(ctx, schedule)
+		err := u.GenerateSlotForSchedule(ctx, schedule, date)
 		if err != nil {
 			u.log.Error("failed to generate slot", "layer", SlotsLayer, "error", err)
 			continue
@@ -50,9 +51,8 @@ func (u *SlotsUsecase) GenerateSlots(ctx context.Context) error {
 	return nil
 }
 
-func (u *SlotsUsecase) GenerateSlotForSchedule(ctx context.Context, schedule *domain.Schedule) error {
+func (u *SlotsUsecase) GenerateSlotForSchedule(ctx context.Context, schedule *domain.Schedule, date time.Time) error {
 	interval := int(u.cfg.SlotInterval.Minutes())
-	date := schedule.Day.Truncate(time.Hour * 24)
 	for i := schedule.StartWorkTime; i+interval <= schedule.EndWorkTime; i += interval {
 		slot := domain.NewSlot(schedule.RoomID, date, i, i+interval)
 		err := u.slotsRepo.CreateSlot(ctx, slot)

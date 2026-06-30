@@ -3,6 +3,7 @@ package psql
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/identicalaffiliation/booking-service/booking/internal/domain"
 )
@@ -47,11 +48,11 @@ func (r *ScheduleRepository) CreateSchedule(ctx context.Context, s *domain.Sched
 	return &created, nil
 }
 
-func (r *ScheduleRepository) GetAllSchedules(ctx context.Context) ([]*domain.Schedule, error) {
-	const query = `
-		SELECT id, room_id, work_day, start_work_time, end_work_time, created_at FROM schedules`
+func (r *ScheduleRepository) GetAllSchedules(ctx context.Context, date time.Time) ([]*domain.Schedule, error) {
+	const query = `SELECT id, room_id, work_day, start_work_time, end_work_time, created_at 
+		FROM schedules WHERE work_day = $1`
 
-	rows, err := r.db.Query(ctx, query)
+	rows, err := r.db.Query(ctx, query, date)
 	if err != nil {
 		return nil, fmt.Errorf("get schedules: %w", err)
 	}

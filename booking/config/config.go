@@ -7,7 +7,7 @@ type (
 		ServerConfig   `yaml:"server"`
 		PostgresConfig `yaml:"postgres"`
 		LoggerConfig   `yaml:"logger"`
-		CronConfig     `yaml:"cron"`
+		TickerConfig   `yaml:"ticker"`
 	}
 
 	ServerConfig struct {
@@ -15,14 +15,14 @@ type (
 		Host            string        `yaml:"host"`
 		ReadTimeout     time.Duration `yaml:"read_timeout"`
 		WriteTimeout    time.Duration `yaml:"write_timeout"`
-		IddleTimeout    time.Duration `yaml:"iddle_timeout"`
+		IdleTimeout     time.Duration `yaml:"idle_timeout"`
 		ShutdownTimeout time.Duration `yaml:"shutdown_timeout"`
 	}
 
 	PostgresConfig struct {
-		DB_URL      string        `env:"POSTGRES_URL"`
+		DbUrl       string        `env:"POSTGRES_URL"`
 		MaxConns    int32         `yaml:"max_conns"`
-		MaxIddle    int           `yaml:"max_iddle"`
+		MaxIdle     int           `yaml:"max_idle"`
 		MaxLifetime time.Duration `yaml:"max_lifetime"`
 	}
 
@@ -31,9 +31,8 @@ type (
 		Format string `yaml:"format"`
 	}
 
-	CronConfig struct {
-		SlotInterval    time.Duration `yaml:"slot_interval"`
-		JobStartHours   int           `yaml:"job_start_hours"`
-		JobStartMinutes int           `yaml:"job_start_minutes"`
+	TickerConfig struct {
+		SlotInterval time.Duration `yaml:"slot_interval"`
+		TickInterval time.Duration `yaml:"tick_interval"`
 	}
 )

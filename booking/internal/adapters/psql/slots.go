@@ -19,7 +19,7 @@ func NewSlotsRepository(db DBTX) *SlotsRepository {
 
 func (r *SlotsRepository) CreateSlot(ctx context.Context, slot *domain.Slot) error {
 	const query = `INSERT INTO slots (id, room_id, date, start_time, end_time)
-		VALUES ($1, $2, $3, $4, $5) RETURNING id, room_id, date, start_time, end_time, created_at`
+		VALUES ($1, $2, $3, $4, $5)`
 
 	_, err := r.db.Exec(ctx, query, slot.ID, slot.RoomID, slot.Day, slot.StartTime, slot.EndTime)
 	if err != nil {

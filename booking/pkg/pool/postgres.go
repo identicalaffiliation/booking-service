@@ -9,7 +9,7 @@ import (
 )
 
 func SetupPool(ctx context.Context, cfg *config.BookingConfig) (*pgxpool.Pool, error, func()) {
-	pool, err := pgxpool.New(ctx, cfg.DB_URL)
+	pool, err := pgxpool.New(ctx, cfg.DbUrl)
 	if err != nil {
 		return nil, fmt.Errorf("open new pgx pool: %w", err), func() {}
 	}

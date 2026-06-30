@@ -3,19 +3,18 @@ server:
   host: 0.0.0.0
   read_timeout: 5s
   write_timeout: 5s
-  iddle_timeout: 60s
+  idle_timeout: 60s
   shutdown_timeout: 30s
 
 postgres:
   max_conns: 25
-  max_iddle: 10
+  max_idle: 10
   max_lifetime: 1h
 
 logger:
   level: debug
   format: text
 
-cron:
+ticker:
   slot_interval: 1h
-  job_start_hours: 6
-  job_start_minutes: 0
+  tick_interval: 1h

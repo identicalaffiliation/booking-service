@@ -14,7 +14,7 @@ func SetupServer(cfg *config.BookingConfig, ru *usecase.RoomsUsecase, su *usecas
 	e.Server.Addr = fmt.Sprintf("%s:%d", cfg.Host, cfg.Port)
 	e.Server.ReadTimeout = cfg.ReadTimeout
 	e.Server.WriteTimeout = cfg.WriteTimeout
-	e.Server.IdleTimeout = cfg.IddleTimeout
+	e.Server.IdleTimeout = cfg.IdleTimeout
 
 	e.POST("/api/v1/rooms", controller.CreateRoom(ru))
 	e.POST("/api/v1/rooms/:roomId/schedule", controller.CreateSchedule(su))
