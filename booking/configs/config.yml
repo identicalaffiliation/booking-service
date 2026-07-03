@@ -8,7 +8,6 @@ server:
 
 postgres:
   max_conns: 25
-  max_idle: 10
   max_lifetime: 1h
 
 logger:
@@ -18,3 +17,8 @@ logger:
 ticker:
   slot_interval: 1h
   tick_interval: 1h
+
+jwt_token:
+  exp: 1h
+  iss: booking-api
+  

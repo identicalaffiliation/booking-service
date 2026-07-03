@@ -29,7 +29,7 @@ func HTTPErrorHandler() echo.HTTPErrorHandler {
 		}
 
 		_ = ctx.JSON(http.StatusInternalServerError, output.HTTPError{
-			Message: "INTERNAL SERVER ERROR",
+			Message: "internal server error",
 			Code:    http.StatusInternalServerError,
 			Status:  output.Internal,
 		})

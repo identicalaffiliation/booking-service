@@ -35,7 +35,7 @@ func NewSlotsUsecase(
 
 func (u *SlotsUsecase) GenerateSlots(ctx context.Context) error {
 	date := time.Now().UTC().Truncate(time.Hour * 24)
-	availableSchedules, err := u.schedulesRepo.GetAllSchedules(ctx, date)
+	availableSchedules, err := u.schedulesRepo.GetAllSchedulesByToday(ctx, date)
 	if err != nil {
 		return domain.ErrInternal
 	}

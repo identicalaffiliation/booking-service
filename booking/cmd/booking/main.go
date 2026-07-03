@@ -44,12 +44,14 @@ func main() {
 	roomsRepo := psql.NewRoomsRepository(postgresPool)
 	schedulesRepo := psql.NewScheduleRepository(postgresPool)
 	slotsRepo := psql.NewSlotsRepository(postgresPool)
+	usersRepo := psql.NewUsersRepository(postgresPool)
 
 	rooms := usecase.NewRoomsUsecase(roomsRepo, slogger)
 	slots := usecase.NewSlotsUsecase(slotsRepo, schedulesRepo, slogger, cfg)
 	schedules := usecase.NewSchedulesUsecase(schedulesRepo, slogger, slots)
-
-	srv := httpserver.SetupServer(cfg, rooms, schedules)
+	auth := usecase.NewAuthUsecase(usersRepo, slogger, cfg)
+	
+	srv := httpserver.SetupServer(cfg, rooms, schedules, auth)
 
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, syscall.SIGTERM, syscall.SIGINT)

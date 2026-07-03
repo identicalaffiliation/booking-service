@@ -3,9 +3,11 @@ package output
 import "net/http"
 
 const (
-	BadRequest = "BAD REQUEST"
-	Internal   = "INTERNAL SERVER ERROR"
-	NotFound   = "NOT FOUND"
+	BadRequest    = "BAD REQUEST"
+	Internal      = "INTERNAL SERVER ERROR"
+	NotFound      = "NOT FOUND"
+	NotAuthorized = "UNAUTHORIZED"
+	Forbidden     = "FORBIDDEN"
 )
 
 type ErrorStatus string
@@ -39,5 +41,21 @@ func NewNotFound() error {
 	return &HTTPError{
 		Code:   http.StatusNotFound,
 		Status: NotFound,
+	}
+}
+
+func NewNotAuthorized(msg string) error {
+	return &HTTPError{
+		Code:    http.StatusUnauthorized,
+		Status:  NotAuthorized,
+		Message: msg,
+	}
+}
+
+func NewForbidden(msg string) error {
+	return &HTTPError{
+		Code:    http.StatusForbidden,
+		Status:  Forbidden,
+		Message: msg,
 	}
 }

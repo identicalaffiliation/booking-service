@@ -22,9 +22,19 @@ type RoomsRepository interface {
 
 type SchedulesRepository interface {
 	CreateSchedule(ctx context.Context, s *domain.Schedule) (*domain.Schedule, error)
-	GetAllSchedules(ctx context.Context, date time.Time) ([]*domain.Schedule, error)
+	GetAllSchedulesByToday(ctx context.Context, date time.Time) ([]*domain.Schedule, error)
 }
 
 type SlotsRepository interface {
 	CreateSlot(ctx context.Context, slot *domain.Slot) error
+}
+
+type UsersRepository interface {
+	CreateUser(ctx context.Context, user *domain.User) (*domain.User, error)
+	GetUser(ctx context.Context, nickname string) (*domain.User, error)
+}
+
+type Hasher interface {
+	HashPassword(password string) (string, error)
+	Compare(password, reqPassword string) error
 }

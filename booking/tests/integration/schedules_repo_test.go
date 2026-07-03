@@ -89,7 +89,7 @@ func TestScheduleRepository_GetAllSchedules(t *testing.T) {
 		require.NoError(t, err)
 	}
 
-	result, err := scheduleRepository.GetAllSchedules(context.Background(), date1)
+	result, err := scheduleRepository.GetAllSchedulesByToday(context.Background(), date1)
 	require.NoError(t, err)
 
 	assert.Equal(t, schedules[0].ID, result[0].ID)

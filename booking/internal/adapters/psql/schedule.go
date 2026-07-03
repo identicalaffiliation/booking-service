@@ -48,7 +48,7 @@ func (r *ScheduleRepository) CreateSchedule(ctx context.Context, s *domain.Sched
 	return &created, nil
 }
 
-func (r *ScheduleRepository) GetAllSchedules(ctx context.Context, date time.Time) ([]*domain.Schedule, error) {
+func (r *ScheduleRepository) GetAllSchedulesByToday(ctx context.Context, date time.Time) ([]*domain.Schedule, error) {
 	const query = `SELECT id, room_id, work_day, start_work_time, end_work_time, created_at 
 		FROM schedules WHERE work_day = $1`
 

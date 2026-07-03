@@ -6,7 +6,9 @@ CREATE TABLE IF NOT EXISTS users (
   nickname VARCHAR(50) NOT NULL,
   password_hash TEXT NOT NULL,
   role users_role NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT NOW()
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+
+  UNIQUE(nickname)
 );
 
 -- +goose Down

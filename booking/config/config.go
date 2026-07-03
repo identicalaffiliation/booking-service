@@ -8,6 +8,7 @@ type (
 		PostgresConfig `yaml:"postgres"`
 		LoggerConfig   `yaml:"logger"`
 		TickerConfig   `yaml:"ticker"`
+		TokenConfig    `yaml:"jwt_token"`
 	}
 
 	ServerConfig struct {
@@ -34,5 +35,11 @@ type (
 	TickerConfig struct {
 		SlotInterval time.Duration `yaml:"slot_interval"`
 		TickInterval time.Duration `yaml:"tick_interval"`
+	}
+
+	TokenConfig struct {
+		JwtSecret string        `env:"JWT_SECRET"`
+		IssuedBy  string        `yaml:"iss"`
+		ExpiredAt time.Duration `yaml:"exp"`
 	}
 )
