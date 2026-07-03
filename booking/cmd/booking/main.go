@@ -53,6 +53,12 @@ func main() {
 	
 	srv := httpserver.SetupServer(cfg, rooms, schedules, auth)
 
+	rooms := usecase.NewRoomsUsecase(roomsRepo, slogger)
+	slots := usecase.NewSlotsUsecase(slotsRepo, schedulesRepo, slogger, cfg)
+	schedules := usecase.NewSchedulesUsecase(schedulesRepo, slogger, slots)
+
+	srv := httpserver.SetupServer(cfg, rooms, schedules)
+
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, syscall.SIGTERM, syscall.SIGINT)
 

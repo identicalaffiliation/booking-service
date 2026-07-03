@@ -23,6 +23,7 @@ type RoomsRepository interface {
 type SchedulesRepository interface {
 	CreateSchedule(ctx context.Context, s *domain.Schedule) (*domain.Schedule, error)
 	GetAllSchedulesByToday(ctx context.Context, date time.Time) ([]*domain.Schedule, error)
+	GetAllSchedules(ctx context.Context, date time.Time) ([]*domain.Schedule, error)
 }
 
 type SlotsRepository interface {
