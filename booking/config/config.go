@@ -8,7 +8,7 @@ type (
 		PostgresConfig `yaml:"postgres"`
 		LoggerConfig   `yaml:"logger"`
 		TickerConfig   `yaml:"ticker"`
-		TokenConfig    `yaml:"jwt_token"`
+		TokensConfig   `yaml:"jwt_token"`
 	}
 
 	ServerConfig struct {
@@ -37,8 +37,18 @@ type (
 		TickInterval time.Duration `yaml:"tick_interval"`
 	}
 
-	TokenConfig struct {
-		JwtSecret string        `env:"JWT_SECRET"`
+	TokensConfig struct {
+		AccessTokenConfig  `yaml:"access"`
+		RefreshTokenConfig `yaml:"refresh"`
+		JwtSecret          string `env:"JWT_SECRET"`
+	}
+
+	AccessTokenConfig struct {
+		IssuedBy  string        `yaml:"iss"`
+		ExpiredAt time.Duration `yaml:"exp"`
+	}
+
+	RefreshTokenConfig struct {
 		IssuedBy  string        `yaml:"iss"`
 		ExpiredAt time.Duration `yaml:"exp"`
 	}

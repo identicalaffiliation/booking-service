@@ -19,6 +19,11 @@ ticker:
   tick_interval: 1h
 
 jwt_token:
-  exp: 1h
-  iss: booking-api
+  access:
+    exp: 1h
+    iss: booking-api
+  refresh:
+    iss: booking-api
+    exp: 7d
+
   

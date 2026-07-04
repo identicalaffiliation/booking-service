@@ -1,6 +1,9 @@
 package hasher
 
 import (
+	"crypto/sha256"
+	"crypto/subtle"
+	"encoding/hex"
 	"fmt"
 
 	"golang.org/x/crypto/bcrypt"
@@ -19,6 +22,19 @@ func (h *Hasher) HashPassword(password string) (string, error) {
 	return string(hash), nil
 }
 
-func (h *Hasher) Compare(password, reqPassword string) error {
+func (h *Hasher) ComparePassword(password, reqPassword string) error {
 	return bcrypt.CompareHashAndPassword([]byte(password), []byte(reqPassword))
+}
+
+func (h *Hasher) Hash(val string) string {
+	sum := sha256.Sum256([]byte(val))
+	return hex.EncodeToString(sum[:])
+}
+
+func (h *Hasher) CompareHash(hash, val string) bool {
+	expected := h.Hash(val)
+	return subtle.ConstantTimeCompare(
+		[]byte(hash),
+		[]byte(expected),
+	) == 1
 }

@@ -34,7 +34,15 @@ type UsersRepository interface {
 	GetUser(ctx context.Context, nickname string) (*domain.User, error)
 }
 
+type RefreshTokensRepository interface {
+	CreateRefreshToken(ctx context.Context, t *domain.RefreshToken) (*domain.RefreshToken, error)
+	GetForUpdate(ctx context.Context, id uuid.UUID) (*domain.RefreshToken, error)
+	Revoked(ctx context.Context, id uuid.UUID) error
+}
+
 type Hasher interface {
+	Hash(val string) string
+	CompareHash(hash, val string) bool
 	HashPassword(password string) (string, error)
-	Compare(password, reqPassword string) error
+	ComparePassword(password, reqPassword string) error
 }

@@ -13,12 +13,12 @@ import (
 )
 
 const (
-	POSTGRES_DOCKER_IMAGE = "postgres:17"
-	POSTGRES_DB           = "testdb"
-	POSTGRES_USER         = "testuser"
-	POSTGRES_PASS         = "testpassword"
-	POSTGRES_SSL          = "sslmode=disable"
-	MIGRATIONS_DIR        = "./../../../migrator/migrations/booking"
+	PostgresDockerImage = "postgres:17"
+	PostgresDb          = "testdb"
+	PostgresUser        = "testuser"
+	PostgresPass        = "testpassword"
+	PostgresSsl         = "sslmode=disable"
+	MigrationsDir       = "./../../../migrator/migrations/booking"
 )
 
 var db *pgxpool.Pool
@@ -28,17 +28,17 @@ func TestMain(m *testing.M) {
 
 	container, err := postgres.Run(
 		ctx,
-		POSTGRES_DOCKER_IMAGE,
-		postgres.WithDatabase(POSTGRES_DB),
-		postgres.WithUsername(POSTGRES_USER),
-		postgres.WithPassword(POSTGRES_PASS),
+		PostgresDockerImage,
+		postgres.WithDatabase(PostgresDb),
+		postgres.WithUsername(PostgresUser),
+		postgres.WithPassword(PostgresPass),
 		postgres.BasicWaitStrategies(),
 	)
 	if err != nil {
 		log.Fatalf("failed to start test postgres container: %v", err)
 	}
 
-	connStr, err := container.ConnectionString(ctx, POSTGRES_SSL)
+	connStr, err := container.ConnectionString(ctx, PostgresSsl)
 	if err != nil {
 		log.Fatalf("failed to get conn str: %v", err)
 	}
@@ -48,7 +48,7 @@ func TestMain(m *testing.M) {
 		log.Fatalf("failed to open test postgres pool: %v", err)
 	}
 
-	if err := goose.UpContext(ctx, stdlib.OpenDBFromPool(db), MIGRATIONS_DIR); err != nil {
+	if err := goose.UpContext(ctx, stdlib.OpenDBFromPool(db), MigrationsDir); err != nil {
 		log.Fatalf("failed to up migrations for test postgres container: %v", err)
 	}
 
