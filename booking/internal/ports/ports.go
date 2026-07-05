@@ -36,7 +36,7 @@ type UsersRepository interface {
 
 type RefreshTokensRepository interface {
 	CreateRefreshToken(ctx context.Context, t *domain.RefreshToken) (*domain.RefreshToken, error)
-	GetForUpdate(ctx context.Context, id uuid.UUID) (*domain.RefreshToken, error)
+	GetForUpdateRefreshToken(ctx context.Context, id uuid.UUID) (*domain.RefreshToken, error)
 	Revoked(ctx context.Context, id uuid.UUID) error
 }
 

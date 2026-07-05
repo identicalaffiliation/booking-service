@@ -32,11 +32,11 @@ func SetupServer(
 	api.POST("/sign-up", controller.Registration(au))
 	api.POST("/sign-in", controller.Login(au))
 
-	private := api.Group("", middlewares.AuthMiddleware(cfg.JwtSecret, cfg.IssuedBy))
+	private := api.Group("", middlewares.AuthMiddleware(cfg.JwtSecret, cfg.AccessTokenConfig.IssuedBy))
 
 	// user booking routes
 	// ...
-	
+
 	admin := private.Group("", middlewares.RoleMiddleware(domain.Admin))
 
 	// admin room routes

@@ -32,15 +32,17 @@ func NewBadRequest(msg string) error {
 
 func NewInternal() error {
 	return &HTTPError{
-		Code:   http.StatusInternalServerError,
-		Status: Internal,
+		Message: "internal server error",
+		Code:    http.StatusInternalServerError,
+		Status:  Internal,
 	}
 }
 
-func NewNotFound() error {
+func NewNotFound(msg string) error {
 	return &HTTPError{
-		Code:   http.StatusNotFound,
-		Status: NotFound,
+		Message: msg,
+		Code:    http.StatusNotFound,
+		Status:  NotFound,
 	}
 }
 

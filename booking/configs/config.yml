@@ -24,6 +24,6 @@ jwt_token:
     iss: booking-api
   refresh:
     iss: booking-api
-    exp: 7d
+    exp: 168h
 
   

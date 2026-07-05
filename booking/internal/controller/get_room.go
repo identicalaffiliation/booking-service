@@ -22,7 +22,7 @@ func GetRoom(rooms *usecase.RoomsUsecase) echo.HandlerFunc {
 			case errors.Is(err, domain.ErrInvalidRoomData):
 				return output.NewBadRequest("invalid room data")
 			case errors.Is(err, domain.ErrRoomNotFound):
-				return output.NewNotFound()
+				return output.NewNotFound("room not found")
 			default:
 				return output.NewInternal()
 			}

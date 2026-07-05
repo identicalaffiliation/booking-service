@@ -32,7 +32,7 @@ func AuthMiddleware(secret, issuer string) echo.MiddlewareFunc {
 
 			tokenString := strings.TrimPrefix(method, BearerMethod)
 			if tokenString == "" {
-				return output.NewNotAuthorized("invalid bearer token")
+				return output.NewNotAuthorized("invalid token type")
 			}
 
 			token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
@@ -63,12 +63,14 @@ func AuthMiddleware(secret, issuer string) echo.MiddlewareFunc {
 
 			ctx.Set(userIdKey, id)
 
-			role, ok := claims["role"].(string)
-			if !ok || role == "" {
+			roleStr, ok := claims["role"].(string)
+			if !ok || roleStr == "" {
 				return output.NewNotAuthorized("invalid token claims")
 			}
 
-			if role != string(domain.Admin) && role != string(domain.Client) {
+			role := domain.UserRole(roleStr)
+
+			if role != domain.Admin && role != domain.Client {
 				return output.NewNotAuthorized("invalid token claims")
 			}
 

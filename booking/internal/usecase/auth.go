@@ -97,6 +97,7 @@ func (u *AuthUsecase) Login(ctx context.Context, in *input.LoginInput) (*output.
 
 	rawToken, err := u.generateRefreshToken(tokenID, user.ID, now)
 	if err != nil {
+		u.log.Error("failed to generate refresh token", "id", tokenID, "error", err)
 		return nil, err
 	}
 
@@ -110,6 +111,7 @@ func (u *AuthUsecase) Login(ctx context.Context, in *input.LoginInput) (*output.
 
 	_, err = u.tokensRepo.CreateRefreshToken(ctx, token)
 	if err != nil {
+		u.log.Error("failed to create refresh token", "id", token.ID, "error", err)
 		return nil, domain.ErrInternal
 	}
 
@@ -142,7 +144,7 @@ func (u *AuthUsecase) Refresh(ctx context.Context, in *input.RefreshAccessTokenI
 			return domain.ErrInvalidRefreshTokenData
 		}
 
-		oldRefreshToken, err := u.tokensRepo.GetForUpdate(ctx, tokenID)
+		oldRefreshToken, err := u.tokensRepo.GetForUpdateRefreshToken(ctx, tokenID)
 		if err != nil {
 			if errors.Is(err, domain.ErrTokenNotFound) {
 				return err
@@ -194,7 +196,7 @@ func (u *AuthUsecase) Refresh(ctx context.Context, in *input.RefreshAccessTokenI
 	if err != nil {
 		return nil, err
 	}
-	
+
 	return &out, nil
 }
 

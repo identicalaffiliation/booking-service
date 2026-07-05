@@ -28,10 +28,6 @@ func HTTPErrorHandler() echo.HTTPErrorHandler {
 			return
 		}
 
-		_ = ctx.JSON(http.StatusInternalServerError, output.HTTPError{
-			Message: "internal server error",
-			Code:    http.StatusInternalServerError,
-			Status:  output.Internal,
-		})
+		_ = ctx.JSON(http.StatusInternalServerError, output.NewInternal())
 	}
 }

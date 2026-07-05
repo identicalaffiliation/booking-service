@@ -25,6 +25,8 @@ func Login(auth *usecase.AuthUsecase) echo.HandlerFunc {
 			switch {
 			case errors.Is(err, domain.ErrInvalidUserData):
 				return output.NewBadRequest("invalid user data")
+			case errors.Is(err, domain.ErrInvalidRefreshTokenData):
+
 			default:
 				return output.NewInternal()
 			}
