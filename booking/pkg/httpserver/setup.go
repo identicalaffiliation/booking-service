@@ -2,6 +2,7 @@ package httpserver
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/identicalaffiliation/booking-service/booking/config"
 	"github.com/identicalaffiliation/booking-service/booking/internal/controller"
@@ -27,11 +28,16 @@ func SetupServer(
 	e.HTTPErrorHandler = controller.HTTPErrorHandler()
 	e.Use(middleware.Recover())
 	e.Use(middleware.RequestLogger())
+	e.Use(middleware.RequestID())
 
 	api := e.Group("/api/v1")
 	api.POST("/sign-up", controller.Registration(au))
 	api.POST("/sign-in", controller.Login(au))
-
+	api.POST("/refresh", controller.Refresh(au))
+	api.GET("/health", func(c echo.Context) error {
+		return c.NoContent(http.StatusOK)
+	})
+	
 	private := api.Group("", middlewares.AuthMiddleware(cfg.JwtSecret, cfg.AccessTokenConfig.IssuedBy))
 
 	// user booking routes

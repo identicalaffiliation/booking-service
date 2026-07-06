@@ -142,7 +142,7 @@ func TestRefreshTokensRepository_Revoke(t *testing.T) {
 
 		err = psql.NewRefreshTokensRepository(
 			db,
-		).Revoke(
+		).Revoked(
 			context.Background(),
 			token.ID,
 		)
@@ -164,7 +164,7 @@ func TestRefreshTokensRepository_Revoke(t *testing.T) {
 		truncate(db, t)
 		err := psql.NewRefreshTokensRepository(
 			db,
-		).Revoke(context.Background(), uuid.New())
+		).Revoked(context.Background(), uuid.New())
 		require.Error(t, err)
 		assert.ErrorIs(t, err, domain.ErrTokenNotFound)
 	})

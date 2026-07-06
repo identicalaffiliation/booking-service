@@ -94,7 +94,7 @@ func (r *RefreshTokensRepository) GetForUpdateRefreshToken(
 }
 
 func (r *RefreshTokensRepository) Revoked(ctx context.Context, id uuid.UUID) error {
-	const query = `UPDATE refresh_tokens SET revoked = true WHERE id = $1`
+	const query = `UPDATE refresh_tokens SET revoked = true WHERE id = $1 AND revoked = false`
 
 	tag, err := r.db.Exec(ctx, query, id)
 	if err != nil {

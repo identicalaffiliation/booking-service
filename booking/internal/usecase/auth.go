@@ -95,7 +95,7 @@ func (u *AuthUsecase) Login(ctx context.Context, in *input.LoginInput) (*output.
 	now := time.Now()
 	tokenID := uuid.New()
 
-	rawToken, err := u.generateRefreshToken(tokenID, user.ID, now)
+	rawToken, err := u.generateRefreshToken(tokenID, user.ID, now, string(user.Role))
 	if err != nil {
 		u.log.Error("failed to generate refresh token", "id", tokenID, "error", err)
 		return nil, err
@@ -118,12 +118,12 @@ func (u *AuthUsecase) Login(ctx context.Context, in *input.LoginInput) (*output.
 	return output.NewLoginOutput(accessToken, rawToken), nil
 }
 
-func (u *AuthUsecase) Refresh(ctx context.Context, in *input.RefreshAccessTokenInput) (*output.Tokens, error) {
+func (u *AuthUsecase) Refresh(ctx context.Context, in *input.RefreshAccessTokenInput) (*output.LoginOutput, error) {
 	if err := in.Validate(); err != nil {
 		return nil, err
 	}
 
-	var out output.Tokens
+	var out *output.LoginOutput = nil
 	err := u.txManager.WithTx(ctx, func(ctx context.Context, tx psql.DBTX) error {
 		claims, err := u.parseRefreshToken(in.RefreshToken)
 		if err != nil {
@@ -144,6 +144,8 @@ func (u *AuthUsecase) Refresh(ctx context.Context, in *input.RefreshAccessTokenI
 			return domain.ErrInvalidRefreshTokenData
 		}
 
+		role := claims["role"].(string)
+
 		oldRefreshToken, err := u.tokensRepo.GetForUpdateRefreshToken(ctx, tokenID)
 		if err != nil {
 			if errors.Is(err, domain.ErrTokenNotFound) {
@@ -154,7 +156,7 @@ func (u *AuthUsecase) Refresh(ctx context.Context, in *input.RefreshAccessTokenI
 			return domain.ErrInternal
 		}
 
-		if !u.hasher.CompareHash(in.RefreshToken, oldRefreshToken.TokenHash) {
+		if !u.hasher.CompareHash(oldRefreshToken.TokenHash, in.RefreshToken) {
 			return domain.ErrInvalidRefreshTokenData
 		}
 
@@ -170,7 +172,7 @@ func (u *AuthUsecase) Refresh(ctx context.Context, in *input.RefreshAccessTokenI
 		now := time.Now()
 		tokenID = uuid.New()
 
-		rawToken, err := u.generateRefreshToken(tokenID, userID, now)
+		rawToken, err := u.generateRefreshToken(tokenID, userID, now, role)
 		if err != nil {
 			return err
 		}
@@ -179,7 +181,7 @@ func (u *AuthUsecase) Refresh(ctx context.Context, in *input.RefreshAccessTokenI
 			tokenID,
 			userID,
 			u.hasher.Hash(rawToken),
-			true,
+			false,
 			now.Add(u.cfg.RefreshTokenConfig.ExpiredAt).Unix(),
 		)
 
@@ -188,16 +190,19 @@ func (u *AuthUsecase) Refresh(ctx context.Context, in *input.RefreshAccessTokenI
 			return domain.ErrInternal
 		}
 
-		out.RefreshToken = rawToken
-		out.AccessToken = ""
+		accessToken, err := u.generateAccessToken(userID, role)
+		if err != nil {
+			return domain.ErrInternal
+		}
 
+		out = output.NewLoginOutput(accessToken, rawToken)
 		return nil
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	return &out, nil
+	return out, nil
 }
 
 func (u *AuthUsecase) generateAccessToken(id uuid.UUID, role string) (string, error) {
@@ -219,10 +224,11 @@ func (u *AuthUsecase) generateAccessToken(id uuid.UUID, role string) (string, er
 	return raw, nil
 }
 
-func (u *AuthUsecase) generateRefreshToken(tokenId, userId uuid.UUID, now time.Time) (string, error) {
+func (u *AuthUsecase) generateRefreshToken(tokenId, userId uuid.UUID, now time.Time, role string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"sub":    tokenId.String(),
 		"userId": userId.String(),
+		"role":   role,
 		"iss":    u.cfg.RefreshTokenConfig.IssuedBy,
 		"exp":    now.Add(u.cfg.RefreshTokenConfig.ExpiredAt).Unix(),
 		"iat":    now.Unix(),
@@ -264,6 +270,11 @@ func (u *AuthUsecase) validateRefreshToken(claims jwt.MapClaims) error {
 
 	iss, ok := claims["iss"].(string)
 	if !ok || iss != u.cfg.RefreshTokenConfig.IssuedBy {
+		return domain.ErrInvalidRefreshTokenData
+	}
+
+	role, ok := claims["role"].(string)
+	if !ok || domain.UserRole(role) != domain.Admin && domain.UserRole(role) != domain.Client {
 		return domain.ErrInvalidRefreshTokenData
 	}
 
