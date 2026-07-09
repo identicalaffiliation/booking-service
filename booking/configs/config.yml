@@ -10,6 +10,16 @@ postgres:
   max_conns: 25
   max_lifetime: 1h
 
+kafka:
+  conn_type: tcp
+  host: 0.0.0.0
+  port: 9092
+  topics:
+    - bookings.created
+    - bookings.cancelled
+  partitions: 1
+  replications: 1
+
 logger:
   level: debug
   format: text

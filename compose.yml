@@ -38,8 +38,19 @@ services:
       context: ./migrator
     environment:
       POSTGRES_URL: ${BOOKING_DB_URL}
+      MIGRATIONS_PATH: ${BOOKING_MIGRATIONS_PATH}
     depends_on:
       booking-postgresql:
+        condition: service_healthy
+  notifications-migrator:
+    container_name: notifications-migrator
+    build:
+      context: ./migrator
+    environment:
+      POSTGRES_URL: ${NOTIFICATIONS_DB_URL}
+      MIGRATIONS_PATH: ${NOTIFICATIONS_MIGRATIONS_PATH}
+    depends_on:
+      notifications-postgresql:
         condition: service_healthy
   booking-api:
     container_name: booking-api

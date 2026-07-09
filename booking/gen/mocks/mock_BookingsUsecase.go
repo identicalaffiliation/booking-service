@@ -132,6 +132,123 @@ func (_c *MockBookingsUsecase_Create_Call) RunAndReturn(run func(context.Context
 	return _c
 }
 
+// GetMyBooking provides a mock function with given fields: ctx, bookingID
+func (_m *MockBookingsUsecase) GetMyBooking(ctx context.Context, bookingID string) (*output.MyBookingOutput, error) {
+	ret := _m.Called(ctx, bookingID)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetMyBooking")
+	}
+
+	var r0 *output.MyBookingOutput
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string) (*output.MyBookingOutput, error)); ok {
+		return rf(ctx, bookingID)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string) *output.MyBookingOutput); ok {
+		r0 = rf(ctx, bookingID)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*output.MyBookingOutput)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = rf(ctx, bookingID)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// MockBookingsUsecase_GetMyBooking_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetMyBooking'
+type MockBookingsUsecase_GetMyBooking_Call struct {
+	*mock.Call
+}
+
+// GetMyBooking is a helper method to define mock.On call
+//   - ctx context.Context
+//   - bookingID string
+func (_e *MockBookingsUsecase_Expecter) GetMyBooking(ctx interface{}, bookingID interface{}) *MockBookingsUsecase_GetMyBooking_Call {
+	return &MockBookingsUsecase_GetMyBooking_Call{Call: _e.mock.On("GetMyBooking", ctx, bookingID)}
+}
+
+func (_c *MockBookingsUsecase_GetMyBooking_Call) Run(run func(ctx context.Context, bookingID string)) *MockBookingsUsecase_GetMyBooking_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(string))
+	})
+	return _c
+}
+
+func (_c *MockBookingsUsecase_GetMyBooking_Call) Return(_a0 *output.MyBookingOutput, _a1 error) *MockBookingsUsecase_GetMyBooking_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *MockBookingsUsecase_GetMyBooking_Call) RunAndReturn(run func(context.Context, string) (*output.MyBookingOutput, error)) *MockBookingsUsecase_GetMyBooking_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// GetMyBookings provides a mock function with given fields: ctx
+func (_m *MockBookingsUsecase) GetMyBookings(ctx context.Context) (*output.MyBookingsOutput, error) {
+	ret := _m.Called(ctx)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetMyBookings")
+	}
+
+	var r0 *output.MyBookingsOutput
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context) (*output.MyBookingsOutput, error)); ok {
+		return rf(ctx)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context) *output.MyBookingsOutput); ok {
+		r0 = rf(ctx)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*output.MyBookingsOutput)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context) error); ok {
+		r1 = rf(ctx)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// MockBookingsUsecase_GetMyBookings_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetMyBookings'
+type MockBookingsUsecase_GetMyBookings_Call struct {
+	*mock.Call
+}
+
+// GetMyBookings is a helper method to define mock.On call
+//   - ctx context.Context
+func (_e *MockBookingsUsecase_Expecter) GetMyBookings(ctx interface{}) *MockBookingsUsecase_GetMyBookings_Call {
+	return &MockBookingsUsecase_GetMyBookings_Call{Call: _e.mock.On("GetMyBookings", ctx)}
+}
+
+func (_c *MockBookingsUsecase_GetMyBookings_Call) Run(run func(ctx context.Context)) *MockBookingsUsecase_GetMyBookings_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context))
+	})
+	return _c
+}
+
+func (_c *MockBookingsUsecase_GetMyBookings_Call) Return(_a0 *output.MyBookingsOutput, _a1 error) *MockBookingsUsecase_GetMyBookings_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *MockBookingsUsecase_GetMyBookings_Call) RunAndReturn(run func(context.Context) (*output.MyBookingsOutput, error)) *MockBookingsUsecase_GetMyBookings_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // NewMockBookingsUsecase creates a new instance of MockBookingsUsecase. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewMockBookingsUsecase(t interface {

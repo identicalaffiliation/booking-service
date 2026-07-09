@@ -10,6 +10,7 @@ require (
 	github.com/labstack/echo/v4 v4.15.4
 	github.com/onsi/ginkgo/v2 v2.32.0
 	github.com/onsi/gomega v1.42.1
+	github.com/segmentio/kafka-go v0.4.44
 	github.com/stretchr/testify v1.11.1
 	golang.org/x/crypto v0.53.0
 )
@@ -63,6 +64,7 @@ require (
 	github.com/moby/term v0.5.2 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.1.1 // indirect
+	github.com/pierrec/lz4/v4 v4.1.26 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/power-devops/perfstat v0.0.0-20240221224432-82ca36839d55 // indirect
 	github.com/sethvargo/go-retry v0.3.0 // indirect

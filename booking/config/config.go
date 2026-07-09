@@ -6,6 +6,7 @@ type (
 	BookingConfig struct {
 		ServerConfig   `yaml:"server"`
 		PostgresConfig `yaml:"postgres"`
+		KafkaConfig    `yaml:"kafka"`
 		LoggerConfig   `yaml:"logger"`
 		TickerConfig   `yaml:"ticker"`
 		TokensConfig   `yaml:"jwt_token"`
@@ -25,6 +26,15 @@ type (
 		MaxConns    int32         `yaml:"max_conns"`
 		MaxIdle     int           `yaml:"max_idle"`
 		MaxLifetime time.Duration `yaml:"max_lifetime"`
+	}
+
+	KafkaConfig struct {
+		ConnectionType string   `yaml:"conn_type"`
+		Host           string   `yaml:"host"`
+		Port           int      `yaml:"port"`
+		Topics         []string `yaml:"topics"`
+		Partitions     int      `yaml:"partitions"`
+		Replications   int      `yaml:"replications"`
 	}
 
 	LoggerConfig struct {

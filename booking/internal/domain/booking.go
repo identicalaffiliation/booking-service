@@ -7,12 +7,12 @@ import (
 )
 
 type Booking struct {
-	ID        uuid.UUID
-	UserID    uuid.UUID
-	SlotID    uuid.UUID
-	Status    BookingStatus
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	ID        uuid.UUID     `json:"id"`
+	UserID    uuid.UUID     `json:"userId"`
+	SlotID    uuid.UUID     `json:"slotId"`
+	Status    BookingStatus `json:"status"`
+	CreatedAt time.Time     `json:"createdAt"`
+	UpdatedAt time.Time     `json:"updatedAt"`
 }
 
 func NewBooking(userID, slotID uuid.UUID) *Booking {

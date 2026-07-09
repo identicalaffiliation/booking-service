@@ -16,6 +16,6 @@ WORKDIR /app
 
 COPY --from=builder /app/migrator .
 
-COPY ./migrations/booking ./migrations
+COPY ./migrations ./migrations
 
 CMD [ "./migrator" ]

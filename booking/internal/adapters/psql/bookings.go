@@ -143,7 +143,7 @@ func (r *BookingsRepository) GetMyBooking(ctx context.Context, bookingID uuid.UU
 }
 
 func (r *BookingsRepository) CancelMyBooking(ctx context.Context, bookingID uuid.UUID) error {
-	const query = `UPDATE bookings SET status = 'cancelled' WHERE id = $1 AND status = 'active'`
+	const query = `UPDATE bookings SET status = 'cancelled', updated_at = now() WHERE id = $1 AND status = 'active'`
 
 	_, err := r.db.Exec(ctx, query, bookingID)
 	if err != nil {

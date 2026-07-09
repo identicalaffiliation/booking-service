@@ -11,8 +11,10 @@ import (
 	"syscall"
 
 	"github.com/identicalaffiliation/booking-service/booking/config"
+	"github.com/identicalaffiliation/booking-service/booking/internal/adapters/kafka"
 	"github.com/identicalaffiliation/booking-service/booking/internal/adapters/psql"
 	"github.com/identicalaffiliation/booking-service/booking/internal/usecase"
+	"github.com/identicalaffiliation/booking-service/booking/pkg/cluster"
 	"github.com/identicalaffiliation/booking-service/booking/pkg/generator"
 	"github.com/identicalaffiliation/booking-service/booking/pkg/httpserver"
 	"github.com/identicalaffiliation/booking-service/booking/pkg/logger"
@@ -37,9 +39,15 @@ func main() {
 	postgresPool, err, cleanup := pool.SetupPool(ctx, cfg)
 	if err != nil {
 		slogger.Error("failed to setup pgx pool", "error", err)
+		os.Exit(1)
 	}
 
 	defer cleanup()
+
+	if err := cluster.CreateKafkaTopics(cfg); err != nil {
+		slogger.Error("failed to setup kafka topics", "error", err)
+		os.Exit(1)
+	}
 
 	roomsRepo := psql.NewRoomsRepository(postgresPool)
 	schedulesRepo := psql.NewScheduleRepository(postgresPool)
@@ -49,12 +57,19 @@ func main() {
 	bookingsRepo := psql.NewBookingsRepository(postgresPool)
 
 	txManager := psql.NewTxManager(postgresPool)
+	producer := kafka.NewKafkaWriter(cfg)
+
+	defer func() {
+		if err := producer.Close(); err != nil {
+			slogger.Error("failed to close kafka producer", "error", err)
+		}
+	}()
 
 	rooms := usecase.NewRoomsUsecase(roomsRepo, slogger)
 	slots := usecase.NewSlotsUsecase(slotsRepo, schedulesRepo, slogger, cfg)
 	schedules := usecase.NewSchedulesUsecase(schedulesRepo, slogger, slots)
 	auth := usecase.NewAuthUsecase(usersRepo, tokensRepo, slogger, cfg, txManager)
-	bookings := usecase.NewBookingsUsecase(bookingsRepo, slogger)
+	bookings := usecase.NewBookingsUsecase(bookingsRepo, slogger, producer)
 
 	srv := httpserver.SetupServer(cfg, rooms, schedules, auth, bookings)
 
