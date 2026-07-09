@@ -21,7 +21,7 @@ func SetupServer(
 	bu *usecase.BookingsUsecase,
 ) *echo.Echo {
 	e := echo.New()
-	e.Server.Addr = fmt.Sprintf("%s:%d", cfg.Host, cfg.Port)
+	e.Server.Addr = fmt.Sprintf("%s:%d", cfg.ServerConfig.Host, cfg.ServerConfig.Port)
 	e.Server.ReadTimeout = cfg.ReadTimeout
 	e.Server.WriteTimeout = cfg.WriteTimeout
 	e.Server.IdleTimeout = cfg.IdleTimeout
