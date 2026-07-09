@@ -13,14 +13,13 @@ import (
 )
 
 const (
-	dir        = "./migrations"
 	dbDialect  = "postgres"
 	driverName = "pgx"
 )
 
 func main() {
 	var action string
-	flag.StringVar(&action, "a", "", "action to migrations (up/down)")
+	flag.StringVar(&action, "a", "", "action to migrations (up/down/reset)")
 	flag.Parse()
 
 	ctx := context.Background()
@@ -35,6 +34,7 @@ func main() {
 
 	goose.SetDialect(dbDialect)
 
+	dir := os.Getenv("MIGRATIONS_PATH")
 	switch action {
 	case "up":
 		if err := goose.UpContext(ctx, db, dir); err != nil {

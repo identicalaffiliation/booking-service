@@ -77,13 +77,13 @@ func (u *SchedulesUsecase) CreateSchedule(ctx context.Context,
 		created.ID,
 		created.RoomID,
 		created.Day.Format(domain.DateLayout),
-		u.minutesToTime(created.StartWorkTime),
-		u.minutesToTime(created.EndWorkTime),
+		minutesToTime(created.StartWorkTime),
+		minutesToTime(created.EndWorkTime),
 		created.CreatedAt.UTC(),
 	), nil
 }
 
-func (u *SchedulesUsecase) minutesToTime(minutes int) string {
+func minutesToTime(minutes int) string {
 	h := minutes / 60
 	m := minutes % 60
 

@@ -76,4 +76,10 @@ type SchedulesUsecase interface {
 type BookingsUsecase interface {
 	Create(ctx context.Context, in *input.CreateBookingInput) (*output.CreateBookingOutput, error)
 	Cancel(ctx context.Context, bookingID uuid.UUID) error
+	GetMyBooking(ctx context.Context, bookingID string) (*output.MyBookingOutput, error)
+	GetMyBookings(ctx context.Context) (*output.MyBookingsOutput, error)
+}
+
+type Writer interface {
+	SendJSON(ctx context.Context, topic, key string, value interface{}) error
 }
