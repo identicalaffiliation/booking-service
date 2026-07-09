@@ -7,11 +7,11 @@ import (
 	"github.com/identicalaffiliation/booking-service/booking/internal/domain"
 	"github.com/identicalaffiliation/booking-service/booking/internal/dto/input"
 	"github.com/identicalaffiliation/booking-service/booking/internal/dto/output"
-	"github.com/identicalaffiliation/booking-service/booking/internal/usecase"
+	"github.com/identicalaffiliation/booking-service/booking/internal/ports"
 	"github.com/labstack/echo/v4"
 )
 
-func Login(auth *usecase.AuthUsecase) echo.HandlerFunc {
+func Login(auth ports.AuthUsecase) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		var in input.LoginInput
 		if err := ctx.Bind(&in); err != nil {
@@ -25,8 +25,6 @@ func Login(auth *usecase.AuthUsecase) echo.HandlerFunc {
 			switch {
 			case errors.Is(err, domain.ErrInvalidUserData):
 				return output.NewBadRequest("invalid user data")
-			case errors.Is(err, domain.ErrInvalidRefreshTokenData):
-
 			default:
 				return output.NewInternal()
 			}

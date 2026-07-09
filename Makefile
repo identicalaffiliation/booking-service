@@ -34,3 +34,7 @@ down:
 .PHONY: integration_tests
 integration_tests:
 	cd booking && go test ./tests/integration/...
+
+.PHONY: behavioural_tests
+behavioural_tests:
+	cd booking/tests/behavioural && go test ./...

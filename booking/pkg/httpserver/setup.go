@@ -18,6 +18,7 @@ func SetupServer(
 	ru *usecase.RoomsUsecase,
 	su *usecase.SchedulesUsecase,
 	au *usecase.AuthUsecase,
+	bu *usecase.BookingsUsecase,
 ) *echo.Echo {
 	e := echo.New()
 	e.Server.Addr = fmt.Sprintf("%s:%d", cfg.Host, cfg.Port)
@@ -37,11 +38,12 @@ func SetupServer(
 	api.GET("/health", func(c echo.Context) error {
 		return c.NoContent(http.StatusOK)
 	})
-	
+
 	private := api.Group("", middlewares.AuthMiddleware(cfg.JwtSecret, cfg.AccessTokenConfig.IssuedBy))
 
 	// user booking routes
-	// ...
+	private.POST("/bookings", controller.CreateBooking(bu))
+	private.PATCH("/bookings/:bookingId", controller.CancelBooking(bu))
 
 	admin := private.Group("", middlewares.RoleMiddleware(domain.Admin))
 
@@ -52,7 +54,7 @@ func SetupServer(
 	admin.DELETE("/rooms/:roomId", controller.DeleteRoom(ru))
 
 	// admin schedule routes
-	admin.POST("/rooms/:roomId/schedule", controller.CreateSchedule(su))
+	admin.POST("/rooms/:roomId/schedules", controller.CreateSchedule(su))
 
 	return e
 }

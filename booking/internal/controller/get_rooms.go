@@ -4,11 +4,11 @@ import (
 	"net/http"
 
 	"github.com/identicalaffiliation/booking-service/booking/internal/dto/output"
-	"github.com/identicalaffiliation/booking-service/booking/internal/usecase"
+	"github.com/identicalaffiliation/booking-service/booking/internal/ports"
 	"github.com/labstack/echo/v4"
 )
 
-func GetRooms(rooms *usecase.RoomsUsecase) echo.HandlerFunc {
+func GetRooms(rooms ports.RoomsUsecase) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		reqCtx := ctx.Request().Context()
 		out, err := rooms.GetRooms(reqCtx)

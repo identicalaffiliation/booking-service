@@ -1,0 +1,16 @@
+with-expecter: true
+resolve-type-alias: false
+disable-version-string: true
+issue-845-fix: true
+
+packages:
+  github.com/identicalaffiliation/booking-service/booking/internal/ports:
+    config:
+      dir: ./gen/mocks
+      outpkg: mocks
+      filename: "mock_{{.InterfaceName}}.go"
+    interfaces:
+      AuthUsecase: {}
+      RoomsUsecase: {}
+      SchedulesUsecase: {}
+      BookingsUsecase: {}

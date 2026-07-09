@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"context"
 	"fmt"
 	"strings"
 
@@ -61,8 +62,6 @@ func AuthMiddleware(secret, issuer string) echo.MiddlewareFunc {
 				return output.NewNotAuthorized("invalid token claims")
 			}
 
-			ctx.Set(userIdKey, id)
-
 			roleStr, ok := claims["role"].(string)
 			if !ok || roleStr == "" {
 				return output.NewNotAuthorized("invalid token claims")
@@ -74,7 +73,11 @@ func AuthMiddleware(secret, issuer string) echo.MiddlewareFunc {
 				return output.NewNotAuthorized("invalid token claims")
 			}
 
-			ctx.Set(userRoleKey, role)
+			reqCtx := ctx.Request().Context()
+			reqCtx = context.WithValue(reqCtx, userIdKey, id)
+			reqCtx = context.WithValue(reqCtx, userRoleKey, role)
+
+			ctx.SetRequest(ctx.Request().WithContext(reqCtx))
 
 			return next(ctx)
 		}

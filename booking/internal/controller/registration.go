@@ -7,11 +7,11 @@ import (
 	"github.com/identicalaffiliation/booking-service/booking/internal/domain"
 	"github.com/identicalaffiliation/booking-service/booking/internal/dto/input"
 	"github.com/identicalaffiliation/booking-service/booking/internal/dto/output"
-	"github.com/identicalaffiliation/booking-service/booking/internal/usecase"
+	"github.com/identicalaffiliation/booking-service/booking/internal/ports"
 	"github.com/labstack/echo/v4"
 )
 
-func Registration(auth *usecase.AuthUsecase) echo.HandlerFunc {
+func Registration(auth ports.AuthUsecase) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		var in input.CreateUserInput
 		if err := ctx.Bind(&in); err != nil {

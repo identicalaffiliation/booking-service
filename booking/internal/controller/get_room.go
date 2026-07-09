@@ -6,11 +6,11 @@ import (
 
 	"github.com/identicalaffiliation/booking-service/booking/internal/domain"
 	"github.com/identicalaffiliation/booking-service/booking/internal/dto/output"
-	"github.com/identicalaffiliation/booking-service/booking/internal/usecase"
+	"github.com/identicalaffiliation/booking-service/booking/internal/ports"
 	"github.com/labstack/echo/v4"
 )
 
-func GetRoom(rooms *usecase.RoomsUsecase) echo.HandlerFunc {
+func GetRoom(rooms ports.RoomsUsecase) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		id := ctx.Param(RoomIdMuxPattern)
 

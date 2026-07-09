@@ -11,27 +11,29 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func Refresh(auth ports.AuthUsecase) echo.HandlerFunc {
+func CreateBooking(booking ports.BookingsUsecase) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
-		var in input.RefreshAccessTokenInput
+		var in input.CreateBookingInput
 		if err := ctx.Bind(&in); err != nil {
 			return output.NewBadRequest("invalid json body")
 		}
 
 		reqCtx := ctx.Request().Context()
 
-		out, err := auth.Refresh(reqCtx, &in)
+		out, err := booking.Create(reqCtx, &in)
 		if err != nil {
 			switch {
-			case errors.Is(err, domain.ErrInvalidRefreshTokenData):
-				return output.NewBadRequest("invalid token data")
-			case errors.Is(err, domain.ErrTokenNotFound):
-				return output.NewNotFound("token not found")
+			case errors.Is(err, domain.ErrInvalidBookingData):
+				return output.NewBadRequest("invalid booking data")
+			case errors.Is(err, domain.ErrInvalidUserData):
+				return output.NewBadRequest("invalid user data")
+			case errors.Is(err, domain.ErrSlotAlreadyBooked):
+				return output.NewBadRequest("slot already booked")
 			default:
 				return output.NewInternal()
 			}
 		}
-
-		return ctx.JSON(http.StatusOK, out)
+		
+		return ctx.JSON(http.StatusCreated, out)
 	}
 }

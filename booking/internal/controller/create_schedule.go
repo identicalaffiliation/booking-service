@@ -8,7 +8,7 @@ import (
 	"github.com/identicalaffiliation/booking-service/booking/internal/domain"
 	"github.com/identicalaffiliation/booking-service/booking/internal/dto/input"
 	"github.com/identicalaffiliation/booking-service/booking/internal/dto/output"
-	"github.com/identicalaffiliation/booking-service/booking/internal/usecase"
+	"github.com/identicalaffiliation/booking-service/booking/internal/ports"
 	"github.com/labstack/echo/v4"
 )
 
@@ -16,7 +16,7 @@ const (
 	RoomIdMuxPattern = "roomId"
 )
 
-func CreateSchedule(schedule *usecase.SchedulesUsecase) echo.HandlerFunc {
+func CreateSchedule(schedule ports.SchedulesUsecase) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		var in input.CreateScheduleInput
 		if err := ctx.Bind(&in); err != nil {

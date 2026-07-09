@@ -46,6 +46,7 @@ func main() {
 	slotsRepo := psql.NewSlotsRepository(postgresPool)
 	usersRepo := psql.NewUsersRepository(postgresPool)
 	tokensRepo := psql.NewRefreshTokensRepository(postgresPool)
+	bookingsRepo := psql.NewBookingsRepository(postgresPool)
 
 	txManager := psql.NewTxManager(postgresPool)
 
@@ -53,8 +54,9 @@ func main() {
 	slots := usecase.NewSlotsUsecase(slotsRepo, schedulesRepo, slogger, cfg)
 	schedules := usecase.NewSchedulesUsecase(schedulesRepo, slogger, slots)
 	auth := usecase.NewAuthUsecase(usersRepo, tokensRepo, slogger, cfg, txManager)
+	bookings := usecase.NewBookingsUsecase(bookingsRepo, slogger)
 
-	srv := httpserver.SetupServer(cfg, rooms, schedules, auth)
+	srv := httpserver.SetupServer(cfg, rooms, schedules, auth, bookings)
 
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, syscall.SIGTERM, syscall.SIGINT)
