@@ -54,6 +54,7 @@ services:
       - "9092:9092"
     depends_on:
       - zookeeper
+
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
     depends_on:
@@ -65,8 +66,6 @@ services:
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
       KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
 
-
-
   booking-migrator:
     container_name: booking-migrator
     build:
@@ -77,6 +76,7 @@ services:
     depends_on:
       booking-postgresql:
         condition: service_healthy
+
   notifications-migrator:
     container_name: notifications-migrator
     build:
@@ -87,6 +87,7 @@ services:
     depends_on:
       notifications-postgresql:
         condition: service_healthy
+
   booking-api:
     container_name: booking-api
     build:
@@ -97,6 +98,15 @@ services:
       - ./booking/configs/config.yml:/app/config.yml:ro
     ports:
       - "8080:8080"
+
+  notifications-service:
+    container_name: notifications-service
+    build:
+      context: ./notifications
+    environment:
+      POSTGRES_URL: ${NOTIFICATIONS_DB_URL}
+    volumes:
+      - ./notifications/configs/config.yml:/app/config.yml:ro
 
 volumes:
   booking_db:
