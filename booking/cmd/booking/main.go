@@ -69,7 +69,7 @@ func main() {
 	slots := usecase.NewSlotsUsecase(slotsRepo, schedulesRepo, slogger, cfg)
 	schedules := usecase.NewSchedulesUsecase(schedulesRepo, slogger, slots)
 	auth := usecase.NewAuthUsecase(usersRepo, tokensRepo, slogger, cfg, txManager)
-	bookings := usecase.NewBookingsUsecase(bookingsRepo, slogger, producer)
+	bookings := usecase.NewBookingsUsecase(bookingsRepo, slogger, producer, cfg)
 
 	srv := httpserver.SetupServer(cfg, rooms, schedules, auth, bookings)
 

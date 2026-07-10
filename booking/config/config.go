@@ -29,12 +29,13 @@ type (
 	}
 
 	KafkaConfig struct {
-		ConnectionType string   `yaml:"conn_type"`
-		Host           string   `yaml:"host"`
-		Port           int      `yaml:"port"`
-		Topics         []string `yaml:"topics"`
-		Partitions     int      `yaml:"partitions"`
-		Replications   int      `yaml:"replications"`
+		ConnectionType string        `yaml:"conn_type"`
+		Host           string        `yaml:"host"`
+		Port           int           `yaml:"port"`
+		Topics         []string      `yaml:"topics"`
+		Partitions     int           `yaml:"partitions"`
+		Replications   int           `yaml:"replications"`
+		Timeout        time.Duration `yaml:"timeout"`
 	}
 
 	LoggerConfig struct {

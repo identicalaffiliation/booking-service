@@ -8,6 +8,12 @@ db_down:
 	docker compose down booking-postgresql
 	docker compose down notifications-postgresql
 
+.PHONY: kafka_up
+kafka_up:
+	docker compose up --build -d zookeeper
+	docker compose up --build -d kafka
+	docker compose up --build -d kafka-ui
+
 .PHONY: clean
 clean:
 	docker compose down -v
