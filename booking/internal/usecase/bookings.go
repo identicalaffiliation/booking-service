@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"github.com/google/uuid"
+	"github.com/identicalaffiliation/booking-service/booking/config"
 	"github.com/identicalaffiliation/booking-service/booking/internal/domain"
 	"github.com/identicalaffiliation/booking-service/booking/internal/dto/input"
 	"github.com/identicalaffiliation/booking-service/booking/internal/dto/output"
@@ -12,20 +13,31 @@ import (
 )
 
 const (
-	userIdKey = "userId"
+	userIdKey          = "userId"
+	topicCreated       = "bookings.created"
+	topicCancelled     = "bookings.cancelled"
+	eventTypeCreated   = "created"
+	eventTypeCancelled = "cancelled"
 )
 
 type BookingsUsecase struct {
 	repo   ports.BookingsRepository
 	log    ports.Logger
 	writer ports.Writer
+	cfg    *config.BookingConfig
 }
 
-func NewBookingsUsecase(repo ports.BookingsRepository, log ports.Logger, writer ports.Writer) *BookingsUsecase {
+func NewBookingsUsecase(
+	repo ports.BookingsRepository,
+	log ports.Logger,
+	writer ports.Writer,
+	cfg *config.BookingConfig,
+) *BookingsUsecase {
 	return &BookingsUsecase{
 		repo:   repo,
 		log:    log,
 		writer: writer,
+		cfg:    cfg,
 	}
 }
 
@@ -59,6 +71,15 @@ func (u *BookingsUsecase) Create(
 		return nil, domain.ErrInternal
 	}
 
+	event := domain.NewEvent(
+		created.ID,
+		created.UserID,
+		created.SlotID,
+		eventTypeCreated,
+	)
+
+	u.sendEventToBroker(topicCreated, event)
+
 	return output.NewBookingOutput(created), nil
 }
 
@@ -70,6 +91,25 @@ func (u *BookingsUsecase) Cancel(ctx context.Context, bookingID uuid.UUID) error
 	if err := u.repo.CancelMyBooking(ctx, bookingID); err != nil {
 		return domain.ErrInternal
 	}
+
+	booking, err := u.repo.GetMyBooking(ctx, bookingID)
+	if err != nil {
+		if errors.Is(err, domain.ErrBookingNotFound) {
+			return err
+		}
+
+		u.log.Error("failed to get booking", "bookingId", bookingID, "error", err)
+		return domain.ErrInternal
+	}
+
+	event := domain.NewEvent(
+		booking.Booking.ID,
+		booking.Booking.UserID,
+		booking.SlotByBooking.ID,
+		eventTypeCancelled,
+	)
+
+	u.sendEventToBroker(topicCancelled, event)
 
 	return nil
 }
@@ -122,4 +162,17 @@ func (u *BookingsUsecase) GetMyBookings(ctx context.Context) (*output.MyBookings
 	}
 
 	return output.NewMyBookingsOutput(bookings), nil
+}
+
+func (u *BookingsUsecase) sendEventToBroker(topic string, event *domain.KafkaEvent) {
+	go func() {
+		sendCtx, cancel := context.WithTimeout(context.Background(), u.cfg.Timeout)
+		defer cancel()
+
+		if err := u.writer.SendJSON(sendCtx, topic, event.BookingID, event); err != nil {
+			u.log.Error("failed to send kafka event", "topic", topic, "error", err)
+		}
+
+		u.log.Debug("event is sent")
+	}()
 }

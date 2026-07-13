@@ -1,0 +1,18 @@
+kafka:
+  conn_type: tcp
+  host: kafka
+  port: 9092
+  topics:
+    - bookings.created
+    - bookings.cancelled
+  partitions: 1
+  replications: 1
+  timeout: 5s
+
+postgres:
+  max_conns: 25
+  max_lifetime: 1h
+
+logger:
+  level: debug
+  format: text

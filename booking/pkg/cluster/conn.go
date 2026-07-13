@@ -10,6 +10,7 @@ import (
 
 func CreateKafkaTopics(cfg *config.BookingConfig) error {
 	addr := fmt.Sprintf("%s:%d", cfg.KafkaConfig.Host, cfg.KafkaConfig.Port)
+	fmt.Println(addr)
 	conn, err := kafka.Dial(cfg.ConnectionType, addr)
 	if err != nil {
 		return fmt.Errorf("dial kafka: %w", err)
@@ -22,7 +23,7 @@ func CreateKafkaTopics(cfg *config.BookingConfig) error {
 		return fmt.Errorf("get cluster controller: %w", err)
 	}
 
-	controllerAddr := fmt.Sprintf("%s:%d", controller.Host, controller.Port)
+	controllerAddr := fmt.Sprintf("%s:%d", cfg.KafkaConfig.Host, controller.Port)
 	controllerConn, err := kafka.Dial(cfg.ConnectionType, controllerAddr)
 	if err != nil {
 		return fmt.Errorf("dial cluster controller: %w", err)

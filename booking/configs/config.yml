@@ -12,13 +12,14 @@ postgres:
 
 kafka:
   conn_type: tcp
-  host: 0.0.0.0
+  host: kafka
   port: 9092
   topics:
     - bookings.created
     - bookings.cancelled
   partitions: 1
   replications: 1
+  timeout: 5s
 
 logger:
   level: debug
