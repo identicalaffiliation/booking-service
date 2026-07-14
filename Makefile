@@ -48,3 +48,15 @@ integration_tests:
 .PHONY: behavioural_tests
 behavioural_tests:
 	cd booking/tests/behavioural && go test ./...
+
+.PHONY: software_up
+software_up:
+	make db_up && \
+	make migrate_up && \
+	make kafka_up && \
+	make up
+
+.PHONY: tests
+tests:
+	make integration_tests && \
+	make behavioural_tests
