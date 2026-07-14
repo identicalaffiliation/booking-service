@@ -99,6 +99,9 @@ services:
       - ./booking/configs/config.yml:/app/config.yml:ro
     ports:
       - "8080:8080"
+    depends_on:
+      - kafka
+      - booking-postgresql
 
   notifications-service:
     container_name: notifications-service
@@ -108,6 +111,9 @@ services:
       POSTGRES_URL: ${NOTIFICATIONS_DB_URL}
     volumes:
       - ./notifications/configs/config.yml:/app/config.yml:ro
+    depends_on:
+      - kafka
+      - notifications-postgresql
 
 volumes:
   booking_db:
